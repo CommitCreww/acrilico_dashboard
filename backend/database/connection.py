@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
 
-DATABASE_URL = "postgresql+psycopg2://admin:admin@localhost:5432/acrilico"
+DATABASE_URL = "postgresql+psycopg2://admin:admin@localhost:5432/acrilico"  #conecta no banco
 
 engine = create_engine(DATABASE_URL)
 
@@ -13,5 +13,5 @@ def get_db():
     db = SessionLocal()
     try:
         yield db
-    finally
+    finally:
         db.close()
