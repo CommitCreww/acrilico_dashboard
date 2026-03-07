@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: acrilico_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: acrilico
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: acrilico_adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres_data:
