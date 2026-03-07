@@ -1,13 +1,17 @@
-import psycopg2
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import os
 
-#CRIA CONEXÃO COM BANCO
-def get_connection():
-    db_name = "acrilico"
-    conn = psycopg2.connect(
-        host="localhost",
-        database=db_name,
-        user="admin",
-        password="admin",
-        port="5432"
-    )
-    return conn
+DATABASE_URL = "postgresql+psycopg2://admin:admin@localhost:5432/acrilico"
+
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False,
+autoflush=False, bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally
+        db.close()
