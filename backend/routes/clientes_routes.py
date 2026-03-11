@@ -4,12 +4,14 @@ from database.models import Cliente
 from flask import Blueprint, jsonify, request
 from database.connection import SessionLocal
 from database.models import Cliente
+from utils.auth_middleware import token_required
 
 clientes_bp = Blueprint("clientes", __name__)
 
 
 
 @clientes_bp.route("/clientes", methods=["GET"])
+@token_required
 def listar_clientes():
 
     db = SessionLocal()
@@ -31,6 +33,7 @@ def listar_clientes():
 
 
 @clientes_bp.route("/clientes", methods=["POST"])
+@token_required
 def criar_cliente():
 
     db = SessionLocal()
@@ -54,6 +57,7 @@ def criar_cliente():
 
 
 @clientes_bp.route("/clientes/<int:id>", methods=["PUT"])
+@token_required
 def atualizar_cliente(id):
 
     db = SessionLocal()
@@ -78,6 +82,7 @@ def atualizar_cliente(id):
     return jsonify({"mensagem": "Cliente atualizado"})
 
 @clientes_bp.route("/clientes/<int:id>", methods=["DELETE"])
+@token_required
 def deletar_cliente(id):
 
     db = SessionLocal()

@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from database.connection import Base
 
 
+
 class Role(Base):
     __tablename__ = "roles"
 
@@ -50,8 +51,20 @@ class Material(Base):
     espessura = Column(String(20))
     preco_m2 = Column(Numeric(10, 2))
 
-    pedidos = relationship("Pedido", back_populates="material")
+    pedido_materiais = relationship("PedidoMaterial")
 
+class PedidoMaterial(Base):
+    __tablename__ = "pedido_materiais"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    pedido_id = Column(Integer, ForeignKey("pedidos.id"))
+    material_id = Column(Integer, ForeignKey("materiais.id"))
+
+    quantidade = Column(Integer, nullable=False)
+
+    pedido = relationship("Pedido", back_populates="materiais")
+    material = relationship("Material")
 
 class Pedido(Base):
     __tablename__ = "pedidos"
@@ -60,10 +73,8 @@ class Pedido(Base):
 
     colaborador_id = Column(Integer, ForeignKey("colaboradores.id"))
     cliente_id = Column(Integer, ForeignKey("clientes.id"))
-    material_id = Column(Integer, ForeignKey("materiais.id"))
 
     descricao = Column(Text)
-    quantidade = Column(Integer)
     valor = Column(Numeric(10, 2))
 
     data_entrada = Column(Date)
@@ -73,10 +84,10 @@ class Pedido(Base):
 
     colaborador = relationship("Colaborador", back_populates="pedidos")
     cliente = relationship("Cliente", back_populates="pedidos")
-    material = relationship("Material", back_populates="pedidos")
+
+    materiais = relationship("PedidoMaterial", back_populates="pedido")
 
     pagamentos = relationship("Pagamento", back_populates="pedido")
-
 
 class Pagamento(Base):
     __tablename__ = "pagamentos"
@@ -91,3 +102,5 @@ class Pagamento(Base):
     data_pagamento = Column(Date)
 
     pedido = relationship("Pedido", back_populates="pagamentos")
+
+
