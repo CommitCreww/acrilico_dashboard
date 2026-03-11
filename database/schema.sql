@@ -4,7 +4,6 @@ CREATE TABLE roles(
 	nivel_acesso INTEGER NOT NULL
 );
 
-
 CREATE TABLE colaboradores(
 	id SERIAL PRIMARY KEY,
 	nome VARCHAR(100) NOT NULL,
@@ -13,7 +12,6 @@ CREATE TABLE colaboradores(
 	telefone VARCHAR(20) NOT NULL,
 	role_id INTEGER REFERENCES roles(id)
 );
-
 
 CREATE TABLE clientes(
 	id SERIAL PRIMARY KEY,
@@ -36,13 +34,18 @@ CREATE TABLE pedidos(
 	id SERIAL PRIMARY KEY,
 	colaborador_id INTEGER REFERENCES colaboradores(id),
 	cliente_id INTEGER REFERENCES clientes(id),
-	material_id INTEGER REFERENCES materiais(id),
 	descricao TEXT,
-	quantidade INTEGER,
 	valor NUMERIC(10,2),
 	data_entrada DATE,
 	data_entrega DATE,
 	status_pedido VARCHAR(20)
+);
+
+CREATE TABLE pedido_materiais(
+	id SERIAL PRIMARY KEY,
+	pedido_id INTEGER REFERENCES pedidos(id),
+	material_id INTEGER REFERENCES materiais(id),
+	quantidade INTEGER
 );
 
 CREATE TABLE pagamentos(
