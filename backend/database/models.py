@@ -51,7 +51,7 @@ class Material(Base):
     espessura = Column(String(20))
     preco_m2 = Column(Numeric(10, 2))
 
-    pedido_materiais = relationship("PedidoMaterial")
+    pedido_materiais = relationship("PedidoMaterial", back_populates="material")
 
 class PedidoMaterial(Base):
     __tablename__ = "pedido_materiais"
@@ -64,7 +64,7 @@ class PedidoMaterial(Base):
     quantidade = Column(Integer, nullable=False)
 
     pedido = relationship("Pedido", back_populates="materiais")
-    material = relationship("Material")
+    material = relationship("Material", back_populates="pedido_materiais")
 
 class Pedido(Base):
     __tablename__ = "pedidos"
