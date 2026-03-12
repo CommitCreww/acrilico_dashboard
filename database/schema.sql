@@ -37,7 +37,7 @@ CREATE TABLE pedidos(
 	descricao TEXT,
 	valor NUMERIC(10,2),
 	data_entrada DATE,
-	data_entrega DATE,
+	data_entrega DATE,""
 	status_pedido VARCHAR(20)
 );
 
