@@ -17,6 +17,6 @@ def login():
     usuario = login_usuario(email, senha)
 
     if not usuario:
-        return jsonify({"erro": "credenciais inválidas"}), 401
+        return jsonify({"erro": "dados inválidos"}), 401
 
     return jsonify(usuario)
