@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 from database.connection import SessionLocal
-from database.models import Pedido, Material, PedidoMaterial
+from database.models import Pedido, Material, PedidoMaterial, Cliente
 
 from utils.auth_middleware import token_required
 from sqlalchemy import func

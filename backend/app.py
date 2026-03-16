@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from routes.clientes_routes import clientes_bp
 from routes.auth_routes import auth_bp
 from routes.material_routes import materiais_bp
@@ -6,6 +7,7 @@ from routes.pedidos_routes import pedidos_bp
 from routes.dashboard_routes import dashboard_bp
 
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(clientes_bp)
 app.register_blueprint(auth_bp)
