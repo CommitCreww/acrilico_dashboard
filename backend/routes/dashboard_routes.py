@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
 from database.connection import SessionLocal
 from database.models import Pedido, Material, PedidoMaterial, Cliente
-
+from querys.dashboard_querys import RESUMO_DASHBOARD,PEDIDOS_RECENTES,PEDIDOS_STATUS,FATURAMENTO_MENSAL,FATURAMENTO_POR_CLIENTE,MATERIAIS_MAIS_USADOS
 from utils.auth_middleware import token_required
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
@@ -13,46 +13,32 @@ def resumo_dashboard():
 
     db = SessionLocal()
 
-    total_pedidos = db.query(func.count(Pedido.id)).scalar()
-
-    pedidos_pendentes = db.query(func.count(Pedido.id)).filter(
-        Pedido.status_pedido == "PENDENTE"
-    ).scalar()
-
-    pedidos_producao = db.query(func.count(Pedido.id)).filter(
-        Pedido.status_pedido == "EM_PRODUCAO"
-    ).scalar()
-
-    faturamento_total = db.query(func.sum(Pedido.valor)).scalar() or 0
+    resultado = db.execute(text(RESUMO_DASHBOARD)).mappings().first()
 
     db.close()
 
     return jsonify({
-        "total_pedidos": total_pedidos,
-        "pedidos_pendentes": pedidos_pendentes,
-        "pedidos_em_producao": pedidos_producao,
-        "faturamento_total": float(faturamento_total)
+        "total_pedidos": resultado["total_pedidos"],
+        "pedidos_pendentes": resultado["pedidos_pendentes"],
+        "pedidos_em_producao": resultado["pedidos_producao"],
+        "faturamento_total": float(resultado["faturamento_total"])
     })
 
 @dashboard_bp.route("/dashboard/pedidos-status", methods=["GET"])
 @token_required
 def pedidos_por_status():
-
     db = SessionLocal()
 
-    resultados = db.query(
-        Pedido.status_pedido,
-        func.count(Pedido.id)
-    ).group_by(Pedido.status_pedido).all()
+    resultados = db.execute(text(PEDIDOS_STATUS)).mappings().all()
 
     db.close()
 
     resposta = []
 
-    for status, quantidade in resultados:
+    for item in resultados:
         resposta.append({
-            "status": status,
-            "quantidade": quantidade
+            "status": item["status"],
+            "quantidade": item["quantidade"]
         })
 
     return jsonify(resposta)
@@ -61,26 +47,18 @@ def pedidos_por_status():
 @dashboard_bp.route("/dashboard/faturamento-mensal", methods=["GET"])
 @token_required
 def faturamento_mensal():
-
     db = SessionLocal()
 
-    resultados = db.query(
-        func.extract("month", Pedido.data_entrada).label("mes"),
-        func.sum(Pedido.valor).label("total")
-    ).group_by(
-        func.extract("month", Pedido.data_entrada)
-    ).order_by(
-        func.extract("month", Pedido.data_entrada)
-    ).all()
+    resultados = db.execute(text(FATURAMENTO_MENSAL)).mappings().all()
 
     db.close()
 
     resposta = []
 
-    for mes, total in resultados:
+    for item in resultados:
         resposta.append({
-            "mes": int(mes),
-            "total": float(total)
+            "mes": int(item["mes"]),
+            "total": float(item["total"])
         })
 
     return jsonify(resposta)
@@ -88,29 +66,18 @@ def faturamento_mensal():
 @dashboard_bp.route("/dashboard/materiais-mais-usados", methods=["GET"])
 @token_required
 def materiais_mais_usados():
-
     db = SessionLocal()
 
-    resultados = db.query(
-        Material.tipo,
-        Material.cor,
-        func.sum(PedidoMaterial.quantidade).label("total")
-    ).join(
-        PedidoMaterial, Material.id == PedidoMaterial.material_id
-    ).group_by(
-        Material.tipo, Material.cor
-    ).order_by(
-        func.sum(PedidoMaterial.quantidade).desc()
-    ).all()
+    resultados = db.execute(text(MATERIAIS_MAIS_USADOS)).mappings().all()
 
     db.close()
 
     resposta = []
 
-    for tipo, cor, total in resultados:
+    for item in resultados:
         resposta.append({
-            "material": f"{tipo} {cor}",
-            "quantidade": int(total)
+            "material": item["material"],
+            "quantidade": int(item["quantidade"])
         })
 
     return jsonify(resposta)
@@ -118,53 +85,40 @@ def materiais_mais_usados():
 @dashboard_bp.route("/dashboard/pedidos-recentes", methods=["GET"])
 @token_required
 def pedidos_recentes():
-
     db = SessionLocal()
 
-    pedidos = db.query(Pedido).order_by(
-        Pedido.data_entrada.desc()
-    ).limit(5).all()
+    resultados = db.execute(text(PEDIDOS_RECENTES)).mappings().all()
+
+    db.close()
 
     resposta = []
 
-    for pedido in pedidos:
+    for item in resultados:
         resposta.append({
-            "id": pedido.id,
-            "cliente": pedido.cliente.nome if pedido.cliente else None,
-            "descricao": pedido.descricao,
-            "valor": float(pedido.valor) if pedido.valor else 0,
-            "status": pedido.status_pedido
+            "id": item["id"],
+            "cliente": item["cliente"],
+            "descricao": item["descricao"],
+            "valor": float(item["valor"]) if item["valor"] is not None else 0,
+            "status": item["status"]
         })
-
-    db.close()
 
     return jsonify(resposta)
 
 @dashboard_bp.route("/dashboard/faturamento-por-cliente", methods=["GET"])
 @token_required
 def faturamento_por_cliente():
-
     db = SessionLocal()
 
-    resultados = db.query(
-        Cliente.nome,
-        func.sum(Pedido.valor).label("total")
-    ).join(
-        Pedido, Cliente.id == Pedido.cliente_id
-    ).group_by(
-        Cliente.nome
-    ).order_by(
-        func.sum(Pedido.valor).desc()
-    ).all()
+    resultados = db.execute(text(FATURAMENTO_POR_CLIENTE)).mappings().all()
 
     db.close()
 
     resposta = []
 
-    for nome, total in resultados:
+    for item in resultados:
         resposta.append({
-            "cliente": nome,
-            "faturamento": float(total)
+            "cliente": item["cliente"],
+            "faturamento": float(item["faturamento"])
         })
 
     return jsonify(resposta)
