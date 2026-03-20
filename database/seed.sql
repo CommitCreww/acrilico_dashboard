@@ -4,9 +4,9 @@ INSERT INTO roles (nome, nivel_acesso) VALUES
 ('VENDEDOR', 5);
 
 INSERT INTO colaboradores (nome, email, senha, telefone, role_id) VALUES
-('Lucas Admin', 'lucas@email.com', '123456', '11999999999', 5),
-('Felipe Gerente', 'felipe@email.com', '123456', '11988888888', 6),
-('Claudia Vendas', 'claudia@email.com', '123456', '11977777777', 7);
+('Lucas Admin', 'lucas@email.com', '123456', '11999999999', 1),
+('Felipe Gerente', 'felipe@email.com', '123456', '11988888888', 2),
+('Claudia Vendas', 'claudia@email.com', '123456', '11977777777', 3);
 
 INSERT INTO clientes (nome, email, telefone, cpf_cnpj, endereco) VALUES
 ('Loja Central', 'contato@lojacentral.com', '1133334444', '12.345.678/0001-00', 'Rua das Flores 123'),
