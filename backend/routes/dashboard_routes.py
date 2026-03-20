@@ -20,7 +20,7 @@ def resumo_dashboard():
     return jsonify({
         "total_pedidos": resultado["total_pedidos"],
         "pedidos_pendentes": resultado["pedidos_pendentes"],
-        "pedidos_em_producao": resultado["pedidos_producao"],
+        "pedidos_em_producao": resultado["pedidos_em_producao"],
         "faturamento_total": float(resultado["faturamento_total"])
     })
 
