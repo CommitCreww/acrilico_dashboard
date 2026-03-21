@@ -30,6 +30,8 @@ CREATE TABLE materiais(
 	preco_m2 NUMERIC(10,2)
 );
 
+
+
 CREATE TABLE pedidos(
 	id SERIAL PRIMARY KEY,
 	colaborador_id INTEGER REFERENCES colaboradores(id),
@@ -37,7 +39,7 @@ CREATE TABLE pedidos(
 	descricao TEXT,
 	valor NUMERIC(10,2),
 	data_entrada DATE,
-	data_entrega DATE,""
+	data_entrega DATE,
 	status_pedido VARCHAR(20)
 );
 
