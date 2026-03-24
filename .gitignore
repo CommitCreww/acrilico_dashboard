@@ -1,1 +1,14 @@
 .env
+__init__.cpython-313.pyc
+app.cpython-313.pyc
+teste.cpython-313.pyc
+__init__.cpython-313.pyc
+auth_routes.cpython-313.pyc
+clientes_routes.cpython-313.pyc
+dashboard_routes.cpython-313.pyc
+funcionarios_routes.cpython-313.pyc
+pedidos_routes.cpython-313.pyc
+produtos_routes.cpython-313.pyc
+__init__.cpython-313.pyc
+connection.cpython-313.pyc
+models.cpython-313.pyc
