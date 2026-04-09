@@ -3,7 +3,7 @@ from database.connection import SessionLocal
 from utils.auth_middleware import token_required
 from sqlalchemy import text
 
-from querys.cliente_querys import (
+from querys.clientes_querys import (
     LISTAR_CLIENTES,
     BUSCAR_CLIENTE_POR_ID,
     CRIAR_CLIENTE,
