@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@import "tailwindcss";
+
+@keyframes floatLargeOne {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-55px) translateX(35px) rotate(14deg) scale(1.08);
+  }
+}
+
+@keyframes floatLargeTwo {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(42px) translateX(-38px) rotate(-16deg) scale(1.1);
+  }
+}
+
+@keyframes floatLargeThree {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-36px) translateX(20px) scale(1.12);
+  }
+}
+
+@keyframes waveMove {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateX(40px) translateY(-16px) rotate(14deg) scale(1.08);
+  }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(22px);
+  opacity: 0.85;
+}
+
+.orb-1 {
+  top: 4%;
+  left: 3%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(168,85,247,0.42) 0%, rgba(168,85,247,0.12) 68%, transparent 100%);
+  animation: floatLargeOne 6s ease-in-out infinite;
+}
+
+.orb-2 {
+  top: 16%;
+  right: 5%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(217,70,239,0.34) 0%, rgba(217,70,239,0.10) 68%, transparent 100%);
+  animation: floatLargeTwo 7s ease-in-out infinite;
+}
+
+.orb-3 {
+  bottom: 4%;
+  left: 6%;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(56,189,248,0.22) 0%, rgba(56,189,248,0.07) 68%, transparent 100%);
+  animation: floatLargeThree 6.5s ease-in-out infinite;
+}
+
+.orb-4 {
+  bottom: 10%;
+  right: 7%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(192,132,252,0.28) 0%, rgba(192,132,252,0.08) 68%, transparent 100%);
+  animation: floatLargeOne 7.5s ease-in-out infinite;
+}
+
+.orb-5 {
+  top: 42%;
+  left: -50px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.03) 68%, transparent 100%);
+  animation: floatLargeTwo 5.5s ease-in-out infinite;
+}
+
+.orb-6 {
+  top: 56%;
+  right: -30px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(236,72,153,0.24) 0%, rgba(236,72,153,0.05) 68%, transparent 100%);
+  animation: floatLargeThree 5s ease-in-out infinite;
+}
+
+.wave {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0.5;
+  filter: blur(1px);
+}
+
+.wave-1 {
+  left: 2%;
+  top: 26%;
+  width: 240px;
+  height: 78px;
+  border: 18px solid rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.18) transparent rgba(255,255,255,0.18) transparent;
+  transform: rotate(32deg);
+  animation: waveMove 5s ease-in-out infinite;
+}
+
+.wave-2 {
+  right: 4%;
+  top: 34%;
+  width: 280px;
+  height: 92px;
+  border: 20px solid rgba(147,197,253,0.16);
+  border-color: rgba(147,197,253,0.16) transparent rgba(147,197,253,0.16) transparent;
+  transform: rotate(-24deg);
+  animation: waveMove 6s ease-in-out infinite;
+}
+
+.wave-3 {
+  left: 12%;
+  bottom: 8%;
+  width: 340px;
+  height: 110px;
+  border: 22px solid rgba(217,70,239,0.14);
+  border-color: rgba(217,70,239,0.14) transparent rgba(217,70,239,0.14) transparent;
+  transform: rotate(10deg);
+  animation: waveMove 5.5s ease-in-out infinite;
+}
+
+.logo-glow {
+  filter: 
+    drop-shadow(0 0 10px rgba(34, 211, 238, 0.4))
+    drop-shadow(0 0 25px rgba(59, 130, 246, 0.4));
+  animation: glowPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+  0% {
+    transform: scale(1);
+    filter:
+      drop-shadow(0 0 8px rgba(34, 211, 238, 0.3))
+      drop-shadow(0 0 18px rgba(59, 130, 246, 0.3));
+  }
+  100% {
+    transform: scale(1.04);
+    filter:
+      drop-shadow(0 0 20px rgba(34, 211, 238, 0.7))
+      drop-shadow(0 0 45px rgba(59, 130, 246, 0.6));
+  }
+}
+

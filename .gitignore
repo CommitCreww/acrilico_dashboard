@@ -1,1 +1,16 @@
 .env
+backend/routes/__pycache__/pedidos_routes.cpython-313.pyc
+backend/routes/__pycache__/material_routes.cpython-313.pyc
+backend/routes/__pycache__/dashboard_routes.cpython-313.pyc
+backend/routes/__pycache__/clientes_routes.cpython-313.pyc
+backend/querys/__pycache__/pedidos_querys.cpython-313.pyc
+backend/querys/__pycache__/material_querys.cpython-313.pyc
+backend/querys/__pycache__/clientes_querys.cpython-313.pyc
+backend/database/__pycache__/connection.cpython-313.pyc
+backend/database/__pycache__/connection.cpython-313.pyc
+backend/routes/__pycache__/clientes_routes.cpython-313.pyc
+backend/routes/__pycache__/dashboard_routes.cpython-313.pyc
+backend/routes/__pycache__/material_routes.cpython-313.pyc
+backend/routes/__pycache__/pedidos_routes.cpython-313.pyc
+*.pyc
+*.pyc
