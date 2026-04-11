@@ -1,40 +1,42 @@
 import { useState } from "react"
 import logo from "../assets/logo.png"
+import { useNavigate } from "react-router-dom"
 
 function Login() {
   const [email, setEmail] = useState("")
   const [senha, setSenha] = useState("")
+  const navigate = useNavigate()
 
   async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault()
+    e.preventDefault()
 
-  try {
-    const response = await fetch("http://127.0.0.1:5000/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        senha: senha,
-      }),
-    })
+    try {
+      const response = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          senha: senha,
+        }),
+      })
 
-    const data = await response.json()
+      const data = await response.json()
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("usuario", JSON.stringify(data.usuario))
-
-      alert("Login realizado com sucesso")
-    } else {
-      alert(data.erro || "Erro no login")
+      if (response.ok) {
+        localStorage.setItem("token", data.token)
+        localStorage.setItem("usuario", JSON.stringify(data.usuario))
+        navigate("/dashboard")
+      } else {
+        alert(data.erro || "Erro no login")
+      }
+    } catch (error) {
+      console.error("Erro ao conectar com a API:", error)
+      alert("Erro ao conectar com a API")
     }
-  } catch (error) {
-    console.error("Erro ao conectar com a API:", error)
-    alert("Erro ao conectar com a API")
   }
-}
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_#24103d_0%,_#12081f_35%,_#05030a_100%)]">
       {/* brilho geral */}
@@ -57,13 +59,13 @@ function Login() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10">
         <div className="w-full max-w-md rounded-[32px] border border-white/10 bg-black/20 p-8 shadow-[0_0_70px_rgba(139,92,246,0.18)] backdrop-blur-2xl">
           {/* topo */}
-            <div className="mb-8 flex items-center justify-center h-32">
-                <img
-                    src={logo}
-                    alt="Logo"
-                    className="logo-glow w-auto max-h-full object-contain"
-                />
-            </div>
+          <div className="mb-8 flex items-center justify-center h-32">
+            <img
+              src={logo}
+              alt="Logo"
+              className="logo-glow w-auto max-h-full object-contain"
+            />
+          </div>
 
           {/* formulário */}
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -71,7 +73,6 @@ function Login() {
               <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.25em] text-white/55">
                 E-mail
               </label>
-
               <div className="group relative">
                 <input
                   type="email"
@@ -88,7 +89,6 @@ function Login() {
               <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.25em] text-white/55">
                 Senha
               </label>
-
               <div className="group relative">
                 <input
                   type="password"
@@ -100,7 +100,6 @@ function Login() {
                 <span className="pointer-events-none absolute bottom-0 left-5 h-[2px] w-0 bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-violet-500 transition-all duration-500 group-focus-within:w-[calc(100%-40px)]" />
               </div>
             </div>
-
 
             <div className="pt-2">
               <button

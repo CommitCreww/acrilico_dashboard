@@ -14,3 +14,4 @@ backend/routes/__pycache__/material_routes.cpython-313.pyc
 backend/routes/__pycache__/pedidos_routes.cpython-313.pyc
 *.pyc
 *.pyc
+*.pyc
