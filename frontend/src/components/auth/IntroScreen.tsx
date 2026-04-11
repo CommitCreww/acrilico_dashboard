@@ -18,19 +18,21 @@ export default function IntroScreen({
       }`}
     >
       <div
-        className={`flex flex-col items-center gap-6 transition-all duration-500 ease-out ${
+        className={`flex flex-col items-center gap-6 px-4 transition-all duration-500 ease-out ${
           isLeaving
             ? "-translate-y-3 scale-95 opacity-0"
             : "translate-y-0 scale-100 opacity-100"
         }`}
       >
-       <div className="text-center">
-  <img
-    src={logo}
-    alt="Ludarte Acrílicos"
-    className="mx-auto h-100 w-auto object-contain md:h-100"
-  />
-</div>
+        <div className="text-center">
+          <img
+            src={logo}
+            alt="Ludarte Acrílicos"
+            className="mx-auto h-100 w-auto object-contain sm:h-28 md:h-100"
+            draggable={false}
+          />
+
+        </div>
 
         <button
           onClick={onStart}

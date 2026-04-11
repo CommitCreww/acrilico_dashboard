@@ -11,15 +11,16 @@ export default function Login() {
   const [stage, setStage] = useState<LoginStage>("intro");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   function handleStart() {
     setError(null);
     setStage("transitioning");
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setStage("auth");
-    }, 500);
+    }, 450);
   }
 
   async function handleLogin(data: { email: string; senha: string }) {
@@ -35,16 +36,23 @@ export default function Login() {
 
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
+      } else {
+        localStorage.setItem("user", JSON.stringify(response));
       }
 
       setStage("success");
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         navigate("/dashboard");
       }, 900);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Falha ao realizar login.";
+        err instanceof Error
+          ? err.message === "Failed to fetch"
+            ? "Não foi possível conectar ao servidor."
+            : err.message
+          : "Falha ao realizar login.";
+
       setError(message);
     } finally {
       setLoading(false);
@@ -60,8 +68,7 @@ export default function Login() {
     <div className="relative min-h-screen overflow-hidden bg-zinc-950">
       <DashboardPreview
         visible={showPreview}
-        blurred={stage !== "success"}
-        darkened={stage !== "success"}
+        blurred={true}
       />
 
       <IntroScreen

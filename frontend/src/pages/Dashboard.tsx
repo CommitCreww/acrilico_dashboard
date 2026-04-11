@@ -46,13 +46,6 @@ export default function Dashboard() {
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
 
-  const userName =
-    user?.nome ||
-    user?.name ||
-    user?.username ||
-    user?.usuario ||
-    user?.email?.split("@")[0] ||
-    "Usuário";
 
   useEffect(() => {
     async function loadDashboard() {
@@ -124,7 +117,7 @@ export default function Dashboard() {
                 pedidosPendentes={resumo.pedidos_pendentes}
                 pedidosEmProducao={resumo.pedidos_em_producao}
                 faturamentoTotal={resumo.faturamento_total}
-                userName={userName}
+                
               />
             </div>
 

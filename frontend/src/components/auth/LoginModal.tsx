@@ -25,21 +25,23 @@ export default function LoginModal({
 
   return (
     <div
-      className={`absolute inset-0 z-30 flex items-center justify-center px-4 transition-all duration-500 ease-out ${
+      className={`absolute inset-0 z-30 flex items-center justify-center px-4 transition-opacity duration-500 ease-out ${
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
     >
       <div
-        className={`w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900/80 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-500 ease-out ${
+        className={`w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-500 ease-out sm:p-8 ${
           isClosing
-            ? "scale-95 translate-y-2 opacity-0"
+            ? "translate-y-2 scale-95 opacity-0"
             : visible
-            ? "scale-100 translate-y-0 opacity-100"
-            : "scale-95 translate-y-6 opacity-0"
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-6 scale-95 opacity-0"
         }`}
       >
         <div className="mb-8">
-          <p className="text-sm font-medium text-violet-300"></p>
+          <p className="text-sm font-medium text-violet-300">
+            Ludarte Acrílicos
+          </p>
           <h2 className="mt-2 text-3xl font-semibold text-white">
             Acessar painel
           </h2>

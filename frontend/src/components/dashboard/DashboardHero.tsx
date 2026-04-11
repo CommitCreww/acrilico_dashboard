@@ -5,7 +5,6 @@ type DashboardHeroProps = {
   pedidosPendentes: number;
   pedidosEmProducao: number;
   faturamentoTotal: number;
-  userName?: string;
 };
 
 function formatCurrency(value: number) {
@@ -26,7 +25,6 @@ export default function DashboardHero({
   pedidosPendentes,
   pedidosEmProducao,
   faturamentoTotal,
-  userName,
 }: DashboardHeroProps) {
   const [now, setNow] = useState(new Date());
 
@@ -68,7 +66,7 @@ export default function DashboardHero({
             </p>
 
             <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white md:text-4xl">
-              {userName ? `${greeting}, ${userName}` : greeting}
+              {greeting}, Usuario
             </h1>
 
             <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 md:text-base">
