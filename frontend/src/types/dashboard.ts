@@ -23,6 +23,8 @@ export type PedidoEntregaHoje = {
 export type FaturamentoMensalItem = {
   mes: number;
   total: number;
+  recebido: number;
+  em_aberto: number;
 };
 
 export type MaterialMaisUsado = {

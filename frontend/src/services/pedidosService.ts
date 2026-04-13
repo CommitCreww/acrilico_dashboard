@@ -1,13 +1,22 @@
 import { apiFetch } from "./api";
 import type { PaginatedPedidos, PedidoDetail, PedidoFormValues } from "../types/pedidos";
 
-export async function getPedidos(page = 1, limit = 5, search = "") {
+export async function getPedidos(
+  page = 1,
+  limit = 5,
+  search = "",
+  status = ""
+) {
   const params = new URLSearchParams();
   params.set("page", String(page));
   params.set("limit", String(limit));
 
   if (search.trim()) {
     params.set("search", search.trim());
+  }
+
+  if (status.trim()) {
+    params.set("status", status.trim());
   }
 
   return apiFetch<PaginatedPedidos>(`/pedidos?${params.toString()}`, {

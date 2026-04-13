@@ -111,18 +111,43 @@ def pedidos_por_status():
 @token_required
 def faturamento_mensal():
     db = SessionLocal()
+    usuario, resultados = get_pedidos_visiveis(db, FATURAMENTO_MENSAL)
 
-    resultados = db.execute(text(FATURAMENTO_MENSAL)).mappings().all()
+    if not usuario:
+        db.close()
+        return jsonify({"erro": "Usuário não encontrado"}), 404
 
     db.close()
 
-    resposta = []
+    faturamento_por_mes = {}
 
     for item in resultados:
-        resposta.append({
-            "mes": int(item["mes"]),
-            "total": float(item["total"])
-        })
+        mes = int(item["mes"])
+        total = float(item["valor_total"]) if item["valor_total"] is not None else 0
+        recebido = float(item["valor_recebido"]) if item["valor_recebido"] is not None else 0
+        em_aberto = max(total - recebido, 0)
+
+        if mes not in faturamento_por_mes:
+            faturamento_por_mes[mes] = {
+                "mes": mes,
+                "total": 0,
+                "recebido": 0,
+                "em_aberto": 0,
+            }
+
+        faturamento_por_mes[mes]["total"] += total
+        faturamento_por_mes[mes]["recebido"] += recebido
+        faturamento_por_mes[mes]["em_aberto"] += em_aberto
+
+    resposta = [
+        {
+            "mes": item["mes"],
+            "total": round(item["total"], 2),
+            "recebido": round(item["recebido"], 2),
+            "em_aberto": round(item["em_aberto"], 2),
+        }
+        for item in sorted(faturamento_por_mes.values(), key=lambda registro: registro["mes"])
+    ]
 
     return jsonify(resposta)
 

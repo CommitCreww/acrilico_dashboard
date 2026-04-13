@@ -95,9 +95,6 @@ export default function DashboardHero({
             <p className="text-sm font-medium text-white">
               Alertas de entrega para hoje
             </p>
-            <p className="mt-1 text-xs text-zinc-500">
-              Visível conforme as permissões da sua role
-            </p>
           </div>
 
           {entregasHoje.length === 0 ? (

@@ -20,11 +20,18 @@ FROM pedidos;
 
 FATURAMENTO_MENSAL = """
 SELECT
-    EXTRACT(MONTH FROM data_entrada) AS mes,
-    COALESCE(SUM(valor), 0) AS total
-FROM pedidos
-GROUP BY EXTRACT(MONTH FROM data_entrada)
-ORDER BY mes;
+    p.id,
+    p.colaborador_id,
+    EXTRACT(MONTH FROM p.data_entrada) AS mes,
+    COALESCE(p.valor, 0) AS valor_total,
+    LEAST(
+        COALESCE(p.valor, 0),
+        COALESCE(SUM(pg.valor_pago), 0)
+    ) AS valor_recebido
+FROM pedidos p
+LEFT JOIN pagamentos pg ON pg.pedido_id = p.id
+GROUP BY p.id, p.colaborador_id, p.data_entrada, p.valor
+ORDER BY mes, p.id;
 """
 
 MATERIAIS_MAIS_USADOS = """

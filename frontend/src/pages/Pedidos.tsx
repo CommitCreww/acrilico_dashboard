@@ -35,6 +35,7 @@ export default function Pedidos() {
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
   const [resumo, setResumo] = useState<ResumoDashboard | null>(null);
@@ -76,7 +77,7 @@ export default function Pedidos() {
       setError(null);
 
       const [pedidosResponse, clientsData, materialsData] = await Promise.all([
-        getPedidos(page, limit, search),
+        getPedidos(page, limit, search, statusFilter),
         getClientes(),
         getMateriais(),
       ]);
@@ -96,7 +97,7 @@ export default function Pedidos() {
 
   async function refreshPedidos() {
     try {
-      const pedidosResponse = await getPedidos(page, limit, search);
+      const pedidosResponse = await getPedidos(page, limit, search, statusFilter);
       setPedidos(pedidosResponse.pedidos);
       setTotal(pedidosResponse.total);
       setPages(pedidosResponse.pages);
@@ -109,7 +110,7 @@ export default function Pedidos() {
 
   useEffect(() => {
     loadPageData();
-  }, [page, search]);
+  }, [page, search, statusFilter]);
 
   useEffect(() => {
     loadResumoData();
@@ -157,6 +158,11 @@ export default function Pedidos() {
   function handleSearchChange(value: string) {
     setPage(1);
     setSearch(value);
+  }
+
+  function handleStatusFilterChange(value: string) {
+    setPage(1);
+    setStatusFilter(value);
   }
 
   function handlePageChange(newPage: number) {
@@ -283,7 +289,9 @@ export default function Pedidos() {
                 pages={pages}
                 total={total}
                 search={search}
+                statusFilter={statusFilter}
                 onSearch={handleSearchChange}
+                onStatusFilterChange={handleStatusFilterChange}
                 onPageChange={handlePageChange}
                 onView={handleViewPedido}
                 onEdit={handleEditPedido}

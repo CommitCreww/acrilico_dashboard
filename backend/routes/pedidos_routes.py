@@ -29,6 +29,15 @@ from querys.pedidos_querys import (
 pedidos_bp = Blueprint("pedidos", __name__)
 
 
+def resolve_valor_pago(valor_total, valor_pago, status_pagamento):
+    valor_pago_normalizado = float(valor_pago) if valor_pago is not None else 0
+
+    if status_pagamento == "PAGO" and valor_pago_normalizado <= 0:
+        return valor_total
+
+    return valor_pago_normalizado
+
+
 def serialize_pedido_list_item(item, nivel_acesso, user_id):
     horario_entrega = item["horario_entrega"]
     if horario_entrega is not None:
@@ -78,6 +87,7 @@ def listar_pedidos():
             limit = 5
 
         search = (request.args.get("search", "") or "").strip()
+        status_filter = (request.args.get("status", "") or "").strip().upper()
 
         if search:
             search_param = f"%{search.lower()}%"
@@ -93,6 +103,17 @@ def listar_pedidos():
             for item in resultados
             if can_view_pedido(usuario.nivel_acesso, item["colaborador_id"], g.user_id)
         ]
+
+        if status_filter:
+            pedidos_visiveis = [
+                item
+                for item in pedidos_visiveis
+                if compute_status_pedido(
+                    item["status_pedido"],
+                    item["data_entrega"],
+                    item["horario_entrega"],
+                ) == status_filter
+            ]
 
         total = len(pedidos_visiveis)
         pages = (total + limit - 1) // limit if total > 0 else 0
@@ -264,13 +285,18 @@ def criar_pedido():
         forma_pagamento = dados.get("forma_pagamento")
         status_pagamento = dados.get("status_pagamento")
         data_pagamento = dados.get("data_pagamento")
+        valor_pago_resolvido = resolve_valor_pago(
+            dados["valor"],
+            valor_pago,
+            status_pagamento,
+        )
 
         if valor_pago is not None or status_pagamento:
             novo_pagamento = Pagamento(
                 pedido_id=pedido_id,
                 forma_pagamento=forma_pagamento,
                 status_pagamento=status_pagamento,
-                valor_pago=valor_pago if valor_pago is not None else 0,
+                valor_pago=valor_pago_resolvido,
                 data_pagamento=datetime.strptime(data_pagamento, "%Y-%m-%d").date() if data_pagamento else None,
             )
             db.add(novo_pagamento)
@@ -374,13 +400,18 @@ def atualizar_pedido(id):
         forma_pagamento = dados.get("forma_pagamento")
         status_pagamento = dados.get("status_pagamento")
         data_pagamento = dados.get("data_pagamento")
+        valor_pago_resolvido = resolve_valor_pago(
+            dados["valor"],
+            valor_pago,
+            status_pagamento,
+        )
 
         if valor_pago is not None or status_pagamento:
             novo_pagamento = Pagamento(
                 pedido_id=id,
                 forma_pagamento=forma_pagamento,
                 status_pagamento=status_pagamento,
-                valor_pago=valor_pago if valor_pago is not None else 0,
+                valor_pago=valor_pago_resolvido,
                 data_pagamento=datetime.strptime(data_pagamento, "%Y-%m-%d").date() if data_pagamento else None,
             )
             db.add(novo_pagamento)

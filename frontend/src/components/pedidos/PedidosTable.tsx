@@ -6,7 +6,9 @@ type PedidosTableProps = {
   pages: number;
   total: number;
   search: string;
+  statusFilter: string;
   onSearch: (value: string) => void;
+  onStatusFilterChange: (value: string) => void;
   onPageChange: (page: number) => void;
   onView: (pedidoId: number) => void;
   onEdit: (pedidoId: number) => void;
@@ -43,7 +45,9 @@ export default function PedidosTable({
   pages,
   total,
   search,
+  statusFilter,
   onSearch,
+  onStatusFilterChange,
   onPageChange,
   onView,
   onEdit,
@@ -54,23 +58,40 @@ export default function PedidosTable({
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-medium text-zinc-300">Pedidos</p>
-          <p className="mt-1 text-sm text-zinc-500">
-            Lista paginada de pedidos registradas no sistema.
-          </p>
         </div>
 
-        <div className="w-full max-w-md">
-          <label htmlFor="pedido-search" className="sr-only">
-            Buscar pedido por cliente
-          </label>
-          <input
-            id="pedido-search"
-            type="text"
-            value={search}
-            onChange={(event) => onSearch(event.target.value)}
-            placeholder="Buscar por cliente"
-            className="w-full rounded-full border border-white/10 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
-          />
+        <div className="flex w-full max-w-3xl flex-col gap-3 sm:flex-row sm:justify-end">
+          <div className="w-full sm:max-w-md">
+            <label htmlFor="pedido-search" className="sr-only">
+              Buscar pedido por cliente
+            </label>
+            <input
+              id="pedido-search"
+              type="text"
+              value={search}
+              onChange={(event) => onSearch(event.target.value)}
+              placeholder="Buscar por cliente"
+              className="w-full rounded-full border border-white/10 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+            />
+          </div>
+
+          <div className="w-full sm:max-w-xs">
+            <label htmlFor="pedido-status-filter" className="sr-only">
+              Filtrar pedidos por status
+            </label>
+            <select
+              id="pedido-status-filter"
+              value={statusFilter}
+              onChange={(event) => onStatusFilterChange(event.target.value)}
+              className="w-full rounded-full border border-white/10 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+            >
+              <option value="">Todos os status</option>
+              <option value="PENDENTE">Pendente</option>
+              <option value="EM_PRODUCAO">Em produção</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="ATRASADO">Atrasado</option>
+            </select>
+          </div>
         </div>
       </div>
 
