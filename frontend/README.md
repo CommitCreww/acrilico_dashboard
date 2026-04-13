@@ -13,7 +13,9 @@ Frontend em React + TypeScript + Vite.
 2. Crie o arquivo `.env` com base no exemplo:
 
 ```powershell
-Copy-Item .env.example .env
+Criar uma variavel com o endereço do backend
+
+ex: VITE_API_URL=http....
 ```
 
 3. Instale as dependências:
