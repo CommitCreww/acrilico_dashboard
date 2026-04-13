@@ -1,4 +1,9 @@
 .env
+backend/.env
+frontend/.env
+__pycache__/
+backend/**/__pycache__/
+frontend/**/__pycache__/
 backend/routes/__pycache__/pedidos_routes.cpython-313.pyc
 backend/routes/__pycache__/material_routes.cpython-313.pyc
 backend/routes/__pycache__/dashboard_routes.cpython-313.pyc
