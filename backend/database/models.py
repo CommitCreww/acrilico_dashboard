@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, Numeric
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, Numeric, Time
 from sqlalchemy.orm import relationship
 from database.connection import Base
 
@@ -79,6 +79,7 @@ class Pedido(Base):
 
     data_entrada = Column(Date)
     data_entrega = Column(Date)
+    horario_entrega = Column(Time, nullable=True)
 
     status_pedido = Column(String(20))
 

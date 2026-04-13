@@ -1,19 +1,21 @@
 RESUMO_DASHBOARD = """
 SELECT
-    COUNT(*) AS total_pedidos,
-    COUNT(*) FILTER (WHERE status_pedido = 'PENDENTE') AS pedidos_pendentes,
-    COUNT(*) FILTER (WHERE status_pedido = 'EM_PRODUCAO') AS pedidos_em_producao,
-    COALESCE(SUM(valor), 0) AS faturamento_total
+    id,
+    colaborador_id,
+    valor,
+    data_entrega,
+    horario_entrega,
+    status_pedido
 FROM pedidos;
 """
 
 PEDIDOS_STATUS = """
 SELECT
-    status_pedido AS status,
-    COUNT(*) AS quantidade
-FROM pedidos
-GROUP BY status_pedido
-ORDER BY status_pedido;
+    colaborador_id,
+    data_entrega,
+    horario_entrega,
+    status_pedido
+FROM pedidos;
 """
 
 FATURAMENTO_MENSAL = """
@@ -38,14 +40,32 @@ ORDER BY quantidade DESC;
 PEDIDOS_RECENTES = """
 SELECT
     p.id,
+    p.colaborador_id,
     c.nome AS cliente,
     p.descricao,
     p.valor,
+    p.data_entrega,
+    p.horario_entrega,
     p.status_pedido AS status
 FROM pedidos p
 JOIN clientes c ON c.id = p.cliente_id
 ORDER BY p.data_entrada DESC
-LIMIT 5;
+"""
+
+PEDIDOS_ENTREGA_HOJE = """
+SELECT
+    p.id,
+    p.colaborador_id,
+    c.nome AS cliente,
+    col.nome AS colaborador,
+    p.data_entrega,
+    p.horario_entrega,
+    p.status_pedido
+FROM pedidos p
+JOIN clientes c ON c.id = p.cliente_id
+JOIN colaboradores col ON col.id = p.colaborador_id
+WHERE p.data_entrega = CURRENT_DATE
+ORDER BY p.horario_entrega NULLS LAST, p.id DESC;
 """
 
 FATURAMENTO_POR_CLIENTE = """

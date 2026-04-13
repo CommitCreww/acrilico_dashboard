@@ -2,6 +2,7 @@ import { apiFetch } from "./api";
 import type {
   ResumoDashboard,
   PedidoStatus,
+  PedidoEntregaHoje,
   FaturamentoMensalItem,
   MaterialMaisUsado,
   PedidoRecente,
@@ -38,6 +39,13 @@ export async function getMateriaisMaisUsados() {
 
 export async function getPedidosRecentes() {
   return apiFetch<PedidoRecente[]>("/dashboard/pedidos-recentes", {
+    method: "GET",
+    auth: true,
+  });
+}
+
+export async function getPedidosEntregaHoje() {
+  return apiFetch<PedidoEntregaHoje[]>("/dashboard/pedidos-entrega-hoje", {
     method: "GET",
     auth: true,
   });

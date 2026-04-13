@@ -7,7 +7,9 @@ export type LoginResponse = {
   token: string;
   user?: {
     id: number;
-    name: string;
+    nome?: string;
+    name?: string;
     email: string;
+    role_id?: number;
   };
 };

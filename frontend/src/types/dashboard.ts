@@ -2,12 +2,22 @@ export type ResumoDashboard = {
   total_pedidos: number;
   pedidos_pendentes: number;
   pedidos_em_producao: number;
+  pedidos_atrasados: number;
   faturamento_total: number;
 };
 
 export type PedidoStatus = {
   status: string;
   quantidade: number;
+};
+
+export type PedidoEntregaHoje = {
+  id: number;
+  cliente: string;
+  colaborador: string;
+  data_entrega: string | null;
+  horario_entrega: string | null;
+  status_pedido: string;
 };
 
 export type FaturamentoMensalItem = {

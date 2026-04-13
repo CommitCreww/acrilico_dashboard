@@ -7,12 +7,14 @@ import StatusOverview from "../components/dashboard/StatusOverview";
 import RecentOrdersList from "../components/dashboard/RecentOrdersList";
 import MaterialsUsageCard from "../components/dashboard/MaterialsUsageCard";
 import ClientRevenueRanking from "../components/dashboard/ClientRevenueRanking";
+import AppTopbar from "../components/layout/AppTopbar";
 
 import {
   getResumoDashboard,
   getPedidosStatus,
   getFaturamentoMensal,
   getMateriaisMaisUsados,
+  getPedidosEntregaHoje,
   getPedidosRecentes,
   getFaturamentoPorCliente,
 } from "../services/dashboardServices";
@@ -20,6 +22,7 @@ import {
 import type {
   ResumoDashboard,
   PedidoStatus,
+  PedidoEntregaHoje,
   FaturamentoMensalItem,
   MaterialMaisUsado,
   PedidoRecente,
@@ -31,31 +34,39 @@ export default function Dashboard() {
     total_pedidos: 0,
     pedidos_pendentes: 0,
     pedidos_em_producao: 0,
+    pedidos_atrasados: 0,
     faturamento_total: 0,
   });
 
   const [pedidosStatus, setPedidosStatus] = useState<PedidoStatus[]>([]);
+  const [pedidosEntregaHoje, setPedidosEntregaHoje] = useState<PedidoEntregaHoje[]>([]);
   const [faturamentoMensal, setFaturamentoMensal] = useState<FaturamentoMensalItem[]>([]);
   const [materiaisMaisUsados, setMateriaisMaisUsados] = useState<MaterialMaisUsado[]>([]);
   const [pedidosRecentes, setPedidosRecentes] = useState<PedidoRecente[]>([]);
   const [faturamentoPorCliente, setFaturamentoPorCliente] = useState<FaturamentoPorClienteItem[]>([]);
 
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
 
+  const userName =
+    user?.nome ||
+    user?.name ||
+    user?.username ||
+    user?.usuario ||
+    user?.email?.split("@")[0] ||
+    "Usuário";
 
   useEffect(() => {
     async function loadDashboard() {
       try {
-        setLoading(true);
         setError(null);
 
         const [
           resumoData,
           pedidosStatusData,
+          pedidosEntregaHojeData,
           faturamentoMensalData,
           materiaisMaisUsadosData,
           pedidosRecentesData,
@@ -63,6 +74,7 @@ export default function Dashboard() {
         ] = await Promise.all([
           getResumoDashboard(),
           getPedidosStatus(),
+          getPedidosEntregaHoje(),
           getFaturamentoMensal(),
           getMateriaisMaisUsados(),
           getPedidosRecentes(),
@@ -71,6 +83,7 @@ export default function Dashboard() {
 
         setResumo(resumoData);
         setPedidosStatus(pedidosStatusData);
+        setPedidosEntregaHoje(pedidosEntregaHojeData);
         setFaturamentoMensal(faturamentoMensalData);
         setMateriaisMaisUsados(materiaisMaisUsadosData);
         setPedidosRecentes(pedidosRecentesData);
@@ -79,15 +92,11 @@ export default function Dashboard() {
         const message =
           err instanceof Error ? err.message : "Erro ao carregar dashboard.";
         setError(message);
-      } finally {
-        setLoading(false);
       }
     }
 
     loadDashboard();
   }, []);
-
-
 
   if (error) {
     return (
@@ -107,31 +116,52 @@ export default function Dashboard() {
   return (
     <>
       <AnimatedBackground />
+      <AppTopbar userName={userName} />
 
       <div className="min-h-screen px-4 py-6 text-white md:px-6 xl:px-8">
         <div className="mx-auto max-w-7xl space-y-6">
-          <section className="grid grid-cols-1 gap-6 xl:grid-cols-4">
-            <div className="xl:col-span-2">
+          <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <div>
               <DashboardHero
-                totalPedidos={resumo.total_pedidos}
-                pedidosPendentes={resumo.pedidos_pendentes}
-                pedidosEmProducao={resumo.pedidos_em_producao}
-                faturamentoTotal={resumo.faturamento_total}
-                
+                userName={userName}
+                entregasHoje={pedidosEntregaHoje}
               />
             </div>
 
-            <SummaryCard
-              title="Pedidos pendentes"
-              value={resumo.pedidos_pendentes}
-              accent="amber"
-            />
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-2 xl:content-start">
+              <SummaryCard
+                title="Total de pedidos"
+                value={resumo.total_pedidos}
+                accent="zinc"
+              />
 
-            <SummaryCard
-              title="Em produção"
-              value={resumo.pedidos_em_producao}
-              accent="violet"
-            />
+              <SummaryCard
+                title="Faturamento total"
+                value={new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(resumo.faturamento_total)}
+                accent="violet"
+              />
+
+              <SummaryCard
+                title="Pedidos pendentes"
+                value={resumo.pedidos_pendentes}
+                accent="amber"
+              />
+
+              <SummaryCard
+                title="Em produção"
+                value={resumo.pedidos_em_producao}
+                accent="violet"
+              />
+
+              <SummaryCard
+                title="Atrasados"
+                value={resumo.pedidos_atrasados}
+                accent="red"
+              />
+            </div>
           </section>
 
           <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">

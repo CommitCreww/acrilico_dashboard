@@ -37,7 +37,7 @@ export default function Login() {
       if (response.user) {
         localStorage.setItem("user", JSON.stringify(response.user));
       } else {
-        localStorage.setItem("user", JSON.stringify(response));
+        throw new Error("Resposta de login inválida.");
       }
 
       setStage("success");

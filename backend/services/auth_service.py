@@ -21,7 +21,7 @@ def login_usuario(email, senha):
 
     return {
         "token": token,
-        "usuario": {
+        "user": {
             "id": usuario.id,
             "nome": usuario.nome,
             "email": usuario.email,

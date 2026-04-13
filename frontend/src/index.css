@@ -38,6 +38,28 @@
   }
 }
 
+.select-dark {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #f8fafc;
+  background-color: rgba(15, 23, 42, 0.95);
+}
+
+.select-dark option {
+  color: #ffffff;
+  background-color: #111827;
+}
+
+.select-dark option:hover,
+.select-dark option:focus {
+  background-color: #27272a;
+}
+
+.select-dark::-ms-expand {
+  display: none;
+}
+
 .orb {
   position: absolute;
   border-radius: 9999px;

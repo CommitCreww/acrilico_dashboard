@@ -7,6 +7,29 @@ type StatusOverviewProps = {
   data?: StatusItem[];
 };
 
+const statusMap: Record<string, { label: string; dot: string; bar: string }> = {
+  PENDENTE: {
+    label: "Pendente",
+    dot: "bg-amber-400",
+    bar: "bg-amber-400",
+  },
+  EM_PRODUCAO: {
+    label: "Em produção",
+    dot: "bg-violet-400",
+    bar: "bg-violet-400",
+  },
+  CONCLUIDO: {
+    label: "Concluído",
+    dot: "bg-emerald-400",
+    bar: "bg-emerald-400",
+  },
+  ATRASADO: {
+    label: "Atrasado",
+    dot: "bg-red-400",
+    bar: "bg-red-400",
+  },
+};
+
 export default function StatusOverview({ data = [] }: StatusOverviewProps) {
   const total = data.reduce((acc, item) => acc + item.quantidade, 0);
 
@@ -27,13 +50,18 @@ export default function StatusOverview({ data = [] }: StatusOverviewProps) {
         <div className="space-y-4">
           {data.map((item) => {
             const percent = total > 0 ? (item.quantidade / total) * 100 : 0;
+            const config = statusMap[item.status] ?? {
+              label: item.status.replace(/_/g, " "),
+              dot: "bg-zinc-400",
+              bar: "bg-zinc-400",
+            };
 
             return (
               <div key={item.status} className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="h-2.5 w-2.5 rounded-full bg-violet-400" />
-                    <span className="text-sm text-zinc-300">{item.status}</span>
+                    <span className={`h-2.5 w-2.5 rounded-full ${config.dot}`} />
+                    <span className="text-sm text-zinc-300">{config.label}</span>
                   </div>
 
                   <span className="text-sm font-medium text-white">
@@ -43,7 +71,7 @@ export default function StatusOverview({ data = [] }: StatusOverviewProps) {
 
                 <div className="h-2 rounded-full bg-white/5">
                   <div
-                    className="h-2 rounded-full bg-violet-400 transition-all"
+                    className={`h-2 rounded-full transition-all ${config.bar}`}
                     style={{ width: `${percent}%` }}
                   />
                 </div>
