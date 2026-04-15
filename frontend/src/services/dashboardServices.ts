@@ -2,6 +2,7 @@ import { apiFetch } from "./api";
 import type {
   ResumoDashboard,
   PedidoStatus,
+  PedidoAtrasado,
   PedidoEntregaHoje,
   FaturamentoMensalItem,
   MaterialMaisUsado,
@@ -18,6 +19,16 @@ export async function getResumoDashboard() {
 
 export async function getPedidosStatus() {
   return apiFetch<PedidoStatus[]>("/dashboard/pedidos-status", {
+    method: "GET",
+    auth: true,
+  });
+}
+
+export async function getPedidosAtrasados(limit = 5) {
+  const params = new URLSearchParams();
+  params.set("limit", String(limit));
+
+  return apiFetch<PedidoAtrasado[]>(`/dashboard/pedidos-atrasados?${params.toString()}`, {
     method: "GET",
     auth: true,
   });

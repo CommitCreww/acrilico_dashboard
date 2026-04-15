@@ -11,6 +11,17 @@ export type PedidoStatus = {
   quantidade: number;
 };
 
+export type PedidoAtrasado = {
+  id: number;
+  cliente: string;
+  descricao: string;
+  data_entrega: string | null;
+  horario_entrega: string | null;
+  status_pedido: string;
+  atraso_segundos: number;
+  atraso_label: string;
+};
+
 export type PedidoEntregaHoje = {
   id: number;
   cliente: string;

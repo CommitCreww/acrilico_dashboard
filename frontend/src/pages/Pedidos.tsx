@@ -3,6 +3,7 @@ import AppTopbar from "../components/layout/AppTopbar";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import SummaryCard from "../components/dashboard/SummaryCard";
 import StatusOverview from "../components/dashboard/StatusOverview";
+import DelayedOrdersBox from "../components/pedidos/DelayedOrdersBox";
 import PedidosTable from "../components/pedidos/PedidosTable";
 import PedidoForm from "../components/pedidos/PedidoForm";
 import PedidoDetail from "../components/pedidos/PedidoDetail";
@@ -15,11 +16,11 @@ import {
 } from "../services/pedidosService";
 import { getClientes } from "../services/clientesService";
 import { getMateriais } from "../services/materiaisService";
-import { getPedidosStatus, getResumoDashboard } from "../services/dashboardServices";
+import { getPedidosStatus, getPedidosAtrasados, getResumoDashboard } from "../services/dashboardServices";
 import type { Pedido, PedidoDetail as PedidoDetailType, PedidoFormValues } from "../types/pedidos";
 import type { Cliente } from "../types/clientes";
 import type { Material } from "../types/materiais";
-import type { ResumoDashboard, PedidoStatus } from "../types/dashboard";
+import type { PedidoAtrasado, ResumoDashboard, PedidoStatus } from "../types/dashboard";
 
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -40,6 +41,7 @@ export default function Pedidos() {
   const [pages, setPages] = useState(1);
   const [resumo, setResumo] = useState<ResumoDashboard | null>(null);
   const [statusData, setStatusData] = useState<PedidoStatus[]>([]);
+  const [delayedOrders, setDelayedOrders] = useState<PedidoAtrasado[]>([]);
   const [pedidoToDelete, setPedidoToDelete] = useState<{
     id: number;
     cliente: string | null;
@@ -58,13 +60,15 @@ export default function Pedidos() {
 
   async function loadResumoData() {
     try {
-      const [resumoData, statusDataResult] = await Promise.all([
+      const [resumoData, statusDataResult, delayedOrdersResult] = await Promise.all([
         getResumoDashboard(),
         getPedidosStatus(),
+        getPedidosAtrasados(5),
       ]);
 
       setResumo(resumoData);
       setStatusData(statusDataResult);
+      setDelayedOrders(delayedOrdersResult);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao carregar resumo de pedidos.";
       setError(message);
@@ -281,7 +285,7 @@ export default function Pedidos() {
             </div>
           ) : null}
 
-          <section className="grid gap-6 xl:grid-cols-[0.72fr_0.28fr]">
+          <section className="grid gap-6 items-start xl:grid-cols-[1.8fr_1fr]">
             <div className="space-y-6">
               <PedidosTable
                 pedidos={pedidos}
@@ -299,7 +303,10 @@ export default function Pedidos() {
               />
             </div>
 
-            <StatusOverview data={statusData} />
+            <div className="grid gap-6">
+              <StatusOverview data={statusData} />
+              <DelayedOrdersBox delayedOrders={delayedOrders} onViewPedido={handleViewPedido} />
+            </div>
           </section>
 
           {loading && (

@@ -1,9 +1,11 @@
-from flask import Blueprint, jsonify, g
+from datetime import datetime
+from flask import Blueprint, jsonify, g, request
 from database.connection import SessionLocal
 from querys.dashboard_querys import (
     RESUMO_DASHBOARD,
     PEDIDOS_RECENTES,
     PEDIDOS_STATUS,
+    PEDIDOS_ATRASADOS,
     FATURAMENTO_MENSAL,
     FATURAMENTO_POR_CLIENTE,
     MATERIAIS_MAIS_USADOS,
@@ -107,6 +109,76 @@ def pedidos_por_status():
     return jsonify(resposta)
 
 
+@dashboard_bp.route("/dashboard/pedidos-atrasados", methods=["GET"])
+@token_required
+def pedidos_atrasados():
+    db = SessionLocal()
+    usuario, resultados = get_pedidos_visiveis(db, PEDIDOS_ATRASADOS)
+
+    if not usuario:
+        db.close()
+        return jsonify({"erro": "Usuário não encontrado"}), 404
+
+    try:
+        limit = max(min(int(request.args.get("limit", 5)), 20), 1)
+    except ValueError:
+        limit = 5
+
+    db.close()
+
+    atrasados = []
+
+    for item in resultados:
+        status = compute_status_pedido(
+            item["status_pedido"],
+            item["data_entrega"],
+            item["horario_entrega"],
+        )
+        if status != "ATRASADO":
+            continue
+
+        horario_entrega = item["horario_entrega"]
+        horario_formatado = None
+        if horario_entrega is not None:
+            horario_formatado = (
+                horario_entrega.strftime("%H:%M")
+                if hasattr(horario_entrega, "strftime")
+                else str(horario_entrega)
+            )
+
+        if item["data_entrega"] is not None:
+            if horario_entrega is not None:
+                entrega_at = datetime.combine(item["data_entrega"], horario_entrega)
+            else:
+                entrega_at = datetime.combine(item["data_entrega"], datetime.min.time())
+            atraso_segundos = max(int((datetime.now() - entrega_at).total_seconds()), 0)
+        else:
+            atraso_segundos = 0
+
+        dias = atraso_segundos // 86400
+        horas = (atraso_segundos % 86400) // 3600
+        minutos = (atraso_segundos % 3600) // 60
+        atraso_label = (
+            f"{dias}d {horas}h" if dias > 0 else
+            f"{horas}h {minutos}m" if horas > 0 else
+            f"{minutos}m"
+        )
+
+        atrasados.append({
+            "id": item["id"],
+            "cliente": item["cliente"],
+            "descricao": item["descricao"],
+            "data_entrega": str(item["data_entrega"]) if item["data_entrega"] else None,
+            "horario_entrega": horario_formatado,
+            "status_pedido": "ATRASADO",
+            "atraso_segundos": atraso_segundos,
+            "atraso_label": atraso_label,
+        })
+
+    atrasados.sort(key=lambda pedido: pedido["atraso_segundos"], reverse=True)
+    return jsonify(atrasados[:limit])
+
+
 @dashboard_bp.route("/dashboard/faturamento-mensal", methods=["GET"])
 @token_required
 def faturamento_mensal():
@@ -181,7 +253,10 @@ def pedidos_recentes():
     if not usuario:
         db.close()
         return jsonify({"erro": "Usuário não encontrado"}), 404
-
+    try:
+        limit = max(min(int(request.args.get("limit", 5)), 20), 1)
+    except ValueError:
+        limit = 5
     db.close()
 
     resposta = []

@@ -18,6 +18,21 @@ SELECT
 FROM pedidos;
 """
 
+PEDIDOS_ATRASADOS = """
+SELECT
+    p.id,
+    p.cliente_id,
+    p.colaborador_id,
+    c.nome AS cliente,
+    p.descricao,
+    p.data_entrega,
+    p.horario_entrega,
+    p.status_pedido
+FROM pedidos p
+JOIN clientes c ON c.id = p.cliente_id
+ORDER BY p.data_entrega ASC NULLS LAST, p.horario_entrega ASC NULLS LAST, p.id DESC;
+"""
+
 FATURAMENTO_MENSAL = """
 SELECT
     p.id,
