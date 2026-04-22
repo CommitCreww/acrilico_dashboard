@@ -8,6 +8,7 @@ import type {
   MaterialMaisUsado,
   PedidoRecente,
   FaturamentoPorClienteItem,
+  PedidosClientesRecorrenciaItem,
 } from "../types/dashboard";
 
 export async function getResumoDashboard() {
@@ -64,6 +65,13 @@ export async function getPedidosEntregaHoje() {
 
 export async function getFaturamentoPorCliente() {
   return apiFetch<FaturamentoPorClienteItem[]>("/dashboard/faturamento-por-cliente", {
+    method: "GET",
+    auth: true,
+  });
+}
+
+export async function getPedidosClientesRecorrencia() {
+  return apiFetch<PedidosClientesRecorrenciaItem[]>("/dashboard/pedidos-clientes-recorrencia", {
     method: "GET",
     auth: true,
   });

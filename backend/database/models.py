@@ -38,6 +38,7 @@ class Cliente(Base):
     telefone = Column(String(20))
     cpf_cnpj = Column(String(30), nullable=False)
     endereco = Column(String(100))
+    observacoes = Column(Text)
 
     pedidos = relationship("Pedido", back_populates="cliente")
 

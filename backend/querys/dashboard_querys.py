@@ -18,6 +18,16 @@ SELECT
 FROM pedidos;
 """
 
+PEDIDOS_CLIENTES_RECORRENCIA = """
+SELECT
+    id,
+    cliente_id,
+    colaborador_id,
+    data_entrada
+FROM pedidos
+ORDER BY cliente_id, data_entrada ASC NULLS LAST, id ASC;
+"""
+
 PEDIDOS_ATRASADOS = """
 SELECT
     p.id,

@@ -19,7 +19,8 @@ CREATE TABLE clientes(
 	email VARCHAR(100),
 	telefone VARCHAR(20),
 	cpf_cnpj VARCHAR(30) NOT NULL,
-	endereco VARCHAR(100)
+	endereco VARCHAR(100),
+	observacoes TEXT
 );
 
 CREATE TABLE materiais(

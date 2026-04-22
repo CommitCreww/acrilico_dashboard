@@ -55,3 +55,9 @@ export type FaturamentoPorClienteItem = {
   cliente: string;
   faturamento: number;
 };
+
+export type PedidosClientesRecorrenciaItem = {
+  mes: string;
+  novos: number;
+  recorrentes: number;
+};

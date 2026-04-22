@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Pedidos from "./pages/Pedidos"
+import Clientes from "./pages/Clientes"
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("token")
@@ -31,6 +32,14 @@ function App() {
           element={
             <PrivateRoute>
               <Pedidos />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/clientes"
+          element={
+            <PrivateRoute>
+              <Clientes />
             </PrivateRoute>
           }
         />

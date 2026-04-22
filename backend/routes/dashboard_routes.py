@@ -5,6 +5,7 @@ from querys.dashboard_querys import (
     RESUMO_DASHBOARD,
     PEDIDOS_RECENTES,
     PEDIDOS_STATUS,
+    PEDIDOS_CLIENTES_RECORRENCIA,
     PEDIDOS_ATRASADOS,
     FATURAMENTO_MENSAL,
     FATURAMENTO_POR_CLIENTE,
@@ -104,6 +105,81 @@ def pedidos_por_status():
         resposta.append({
             "status": status,
             "quantidade": contagem_status[status]
+        })
+
+    return jsonify(resposta)
+
+
+@dashboard_bp.route("/dashboard/pedidos-clientes-recorrencia", methods=["GET"])
+@token_required
+def pedidos_clientes_recorrencia():
+    db = SessionLocal()
+    usuario, resultados = get_pedidos_visiveis(db, PEDIDOS_CLIENTES_RECORRENCIA)
+
+    if not usuario:
+        db.close()
+        return jsonify({"erro": "UsuÃ¡rio nÃ£o encontrado"}), 404
+
+    db.close()
+
+    clientes_vistos = set()
+    recorrencia_por_mes = {}
+
+    def get_mes_key(data_entrada):
+        if not data_entrada:
+            return None
+
+        return (data_entrada.year, data_entrada.month)
+
+    def get_mes_label(mes_key):
+        meses = [
+            "Jan",
+            "Fev",
+            "Mar",
+            "Abr",
+            "Mai",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Set",
+            "Out",
+            "Nov",
+            "Dez",
+        ]
+        ano, mes = mes_key
+        return f"{meses[mes - 1]}/{str(ano)[-2:]}"
+
+    def ensure_mes(mes_key):
+        if mes_key not in recorrencia_por_mes:
+            recorrencia_por_mes[mes_key] = {
+                "mes": get_mes_label(mes_key),
+                "novos_clientes": set(),
+                "clientes_recorrentes": set(),
+            }
+
+    for item in resultados:
+        cliente_id = item["cliente_id"]
+        mes_key = get_mes_key(item["data_entrada"])
+
+        if not mes_key:
+            continue
+
+        ensure_mes(mes_key)
+
+        if cliente_id in clientes_vistos:
+            recorrencia_por_mes[mes_key]["clientes_recorrentes"].add(cliente_id)
+        else:
+            clientes_vistos.add(cliente_id)
+            recorrencia_por_mes[mes_key]["novos_clientes"].add(cliente_id)
+
+    resposta = []
+
+    for mes_key in sorted(recorrencia_por_mes.keys()):
+        item = recorrencia_por_mes[mes_key]
+        resposta.append({
+            "mes": item["mes"],
+            "novos": len(item["novos_clientes"]),
+            "recorrentes": len(item["clientes_recorrentes"]),
         })
 
     return jsonify(resposta)
