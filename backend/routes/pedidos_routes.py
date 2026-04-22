@@ -1,8 +1,12 @@
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, send_file
 from database.connection import SessionLocal
 from database.models import Pedido, PedidoMaterial, Pagamento
 from utils.auth_middleware import token_required
-from datetime import datetime, time
+from datetime import datetime, date, time
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
+from reportlab.pdfgen import canvas
 from utils.pedidos_status import compute_status_pedido, normalize_status_pedido
 from utils.permissions import (
     can_delete_pedido,
@@ -63,6 +67,191 @@ def serialize_pedido_list_item(item, nivel_acesso, user_id):
         "can_edit": can_edit_pedido(nivel_acesso, item["colaborador_id"], user_id),
         "can_delete": can_delete_pedido(nivel_acesso, item["colaborador_id"], user_id),
     }
+
+
+def gerar_pdf_recibo(pedido, materiais, pagamentos):
+    buffer = BytesIO()
+    page_width, page_height = A4
+    margin = 20 * mm
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    pdf.setTitle(f"Recibo Pedido {pedido['id']}")
+
+    def draw_heading(text, x, y):
+        pdf.setFont("Helvetica-Bold", 16)
+        pdf.drawString(x, y, text)
+
+    def format_field(value):
+        if isinstance(value, (datetime, date)):
+            return value.strftime("%d/%m/%Y")
+        return str(value) if value is not None else "-"
+
+    def draw_label_value(label, value, x, y, label_size=9, value_size=10):
+        pdf.setFont("Helvetica-Bold", label_size)
+        pdf.drawString(x, y, label)
+        pdf.setFont("Helvetica", value_size)
+        pdf.drawString(x + 80, y, format_field(value))
+
+    y = page_height - margin
+    draw_heading("Recibo de Venda", margin, y)
+    pdf.setFont("Helvetica", 10)
+    pdf.drawRightString(page_width - margin, y, datetime.now().strftime("%d/%m/%Y"))
+    y -= 24
+
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(margin, y, "LUDARTE ACRÍLICOS")
+    pdf.setFont("Helvetica", 9)
+    pdf.drawString(margin, y - 14, "Rua do Gasômetro, 522 - Bras")
+    pdf.drawString(margin, y - 26, "Email: contato@ludarteacrilicos.com")
+    pdf.drawString(margin, y - 38, "Telefone: (27) 99999-9999")
+    pdf.setStrokeColorRGB(0.7, 0.7, 0.7)
+    pdf.setLineWidth(0.8)
+    pdf.line(margin, y - 48, page_width - margin, y - 48)
+    y -= 64
+
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(margin, y, "Pedido")
+    pdf.drawString(page_width / 2 + 10, y, "Cliente")
+    y -= 16
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(margin, y, f"Pedido #{pedido['id']}")
+    pdf.drawString(page_width / 2 + 10, y, pedido['cliente'])
+    y -= 14
+    pdf.drawString(margin, y, f"Vendedor: {pedido['colaborador']}")
+    pdf.drawString(page_width / 2 + 10, y, pedido.get('cliente_email') or '-')
+    y -= 14
+    pdf.drawString(margin, y, f"Status: {pedido['status_pedido'].replace('_', ' ')}")
+    pdf.drawString(page_width / 2 + 10, y, pedido.get('cliente_telefone') or '-')
+    y -= 14
+    pdf.drawString(margin, y, f"Entrega: {format_field(pedido.get('data_entrega'))}")
+    pdf.drawString(page_width / 2 + 10, y, f"CPF/CNPJ: {pedido.get('cliente_cpf_cnpj') or '-'}")
+    y -= 14
+    pdf.drawString(margin, y, f"Descrição: {pedido.get('descricao') or '-'}")
+    pdf.drawRightString(page_width - margin, y, f"Total Pedido: R$ {float(pedido['valor'] or 0):.2f}")
+    y -= 26
+
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(margin, y, "Materiais")
+    y -= 16
+    pdf.setFont("Helvetica-Bold", 10)
+    pdf.drawString(margin, y, "Descrição")
+    pdf.drawRightString(page_width - margin - 180, y, "Qtd")
+    pdf.drawRightString(page_width - margin - 100, y, "Preço Unit.")
+    pdf.drawRightString(page_width - margin, y, "Subtotal")
+    y -= 10
+    pdf.setLineWidth(0.5)
+    pdf.line(margin, y, page_width - margin, y)
+    y -= 14
+    pdf.setFont("Helvetica", 10)
+
+    total_geral = 0.0
+    for item in materiais:
+        if y < margin + 80:
+            pdf.showPage()
+            y = page_height - margin
+            pdf.setFont("Helvetica", 10)
+
+        descricao = f"{item['tipo']} {item['cor']} {item['espessura']}"
+        quantidade = item.get('quantidade') or 0
+        preco = float(item.get('preco_m2') or 0)
+        subtotal = float(quantidade) * preco
+        total_geral += subtotal
+
+        pdf.drawString(margin, y, descricao[:52])
+        pdf.drawRightString(page_width - margin - 180, y, str(quantidade))
+        pdf.drawRightString(page_width - margin - 100, y, f"R$ {preco:.2f}")
+        pdf.drawRightString(page_width - margin, y, f"R$ {subtotal:.2f}")
+        y -= 14
+
+    y -= 8
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawRightString(page_width - margin, y, f"Total materiais: R$ {total_geral:.2f}")
+    y -= 22
+
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(margin, y, "Pagamentos")
+    y -= 16
+    pdf.setFont("Helvetica", 10)
+
+    if pagamentos:
+        pago = 0.0
+        for pagamento in pagamentos:
+            status = pagamento['status_pagamento'].replace('_', ' ')
+            valor_pago = float(pagamento.get('valor_pago') or 0)
+            pago += valor_pago
+            pdf.drawString(margin, y, f"{status}")
+            pdf.drawString(page_width / 2 - 20, y, f"{pagamento.get('forma_pagamento') or '-'}")
+            pdf.drawRightString(page_width - margin - 100, y, f"R$ {valor_pago:.2f}")
+            pdf.drawRightString(page_width - margin, y, format_field(pagamento.get('data_pagamento')))
+            y -= 14
+            if y < margin + 80:
+                pdf.showPage()
+                y = page_height - margin
+                pdf.setFont("Helvetica", 10)
+
+        y -= 8
+        pdf.setFont("Helvetica-Bold", 10)
+        pdf.drawString(margin, y, f"Total pago: R$ {pago:.2f}")
+        pdf.drawRightString(page_width - margin, y, f"Saldo: R$ {float(pedido['valor'] or 0) - pago:.2f}")
+        y -= 18
+    else:
+        pdf.drawString(margin, y, "Nenhum pagamento registrado.")
+        y -= 18
+
+    pdf.setFillColorRGB(0.2, 0.2, 0.2)
+    pdf.setFont("Helvetica-Oblique", 9)
+    pdf.drawString(margin, y, "Agradecemos pela preferência. Este recibo comprova a operação de venda e pode ser usado para fins fiscais e de entrega.")
+    pdf.showPage()
+    pdf.save()
+    buffer.seek(0)
+    return buffer
+
+
+@pedidos_bp.route("/pedidos/<int:id>/recibo", methods=["GET"])
+@token_required
+def download_pedido_recibo(id):
+    db = SessionLocal()
+
+    try:
+        usuario = get_usuario_contexto(db, g.user_id)
+        if not usuario:
+            db.close()
+            return jsonify({"erro": "Usuário não encontrado"}), 404
+
+        pedido = db.execute(
+            text(BUSCAR_PEDIDO_POR_ID),
+            {"pedido_id": id}
+        ).mappings().first()
+
+        if not pedido:
+            db.close()
+            return jsonify({"erro": "Pedido não encontrado"}), 404
+
+        if not can_view_pedido(usuario.nivel_acesso, pedido["colaborador_id"], g.user_id):
+            db.close()
+            return jsonify({"erro": "Você não tem permissão para visualizar este pedido"}), 403
+
+        materiais = db.execute(
+            text(BUSCAR_MATERIAIS_DO_PEDIDO),
+            {"pedido_id": id}
+        ).mappings().all()
+
+        pagamentos = db.execute(
+            text(BUSCAR_PAGAMENTOS_DO_PEDIDO),
+            {"pedido_id": id}
+        ).mappings().all()
+
+        pdf_buffer = gerar_pdf_recibo(pedido, materiais, pagamentos)
+        db.close()
+
+        return send_file(
+            pdf_buffer,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=f"recibo_pedido_{id}.pdf"
+        )
+    except Exception as e:
+        db.close()
+        return jsonify({"erro": str(e)}), 500
 
 
 @pedidos_bp.route("/pedidos", methods=["GET"])

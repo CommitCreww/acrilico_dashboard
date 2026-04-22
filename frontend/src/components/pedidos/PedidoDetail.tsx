@@ -1,9 +1,11 @@
+import { useState } from "react";
 import type { PedidoDetail } from "../../types/pedidos";
 
 type PedidoDetailProps = {
   pedido: PedidoDetail;
   onEdit: () => void;
   onDelete: () => void;
+  onDownload?: () => Promise<void>;
   onClose: () => void;
 };
 
@@ -14,7 +16,21 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
-export default function PedidoDetail({ pedido, onEdit, onDelete, onClose }: PedidoDetailProps) {
+export default function PedidoDetail({ pedido, onEdit, onDelete, onDownload, onClose }: PedidoDetailProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  async function handleDownload() {
+    if (!onDownload) {
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+      await onDownload();
+    } finally {
+      setIsDownloading(false);
+    }
+  }
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/70 p-4"
@@ -58,6 +74,16 @@ export default function PedidoDetail({ pedido, onEdit, onDelete, onClose }: Pedi
                   className="rounded-3xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20"
                 >
                   Excluir
+                </button>
+              ) : null}
+              {onDownload ? (
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className="rounded-3xl border border-sky-500/20 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-200 transition hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isDownloading ? "Baixando recibo..." : "Baixar recibo"}
                 </button>
               ) : null}
             </div>

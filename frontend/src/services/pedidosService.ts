@@ -32,6 +32,41 @@ export async function getPedido(id: number) {
   });
 }
 
+export async function downloadPedidoRecibo(id: number) {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/pedidos/${id}/recibo`, {
+    method: "GET",
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : undefined,
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Erro ao baixar o recibo.";
+
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.erro || errorMessage;
+    } catch {
+      errorMessage = `Erro HTTP ${response.status}`;
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `recibo_pedido_${id}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 export async function createPedido(data: PedidoFormValues) {
   return apiFetch<{ message: string; pedido_id: number }>("/pedidos", {
     method: "POST",

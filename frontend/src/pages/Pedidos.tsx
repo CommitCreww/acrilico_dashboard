@@ -10,6 +10,7 @@ import PedidoDetail from "../components/pedidos/PedidoDetail";
 import {
   createPedido,
   deletePedido,
+  downloadPedidoRecibo,
   getPedido,
   getPedidos,
   updatePedido,
@@ -206,6 +207,16 @@ export default function Pedidos() {
     }
   }
 
+  async function handleDownloadPedidoRecibo(id: number) {
+    try {
+      setError(null);
+      await downloadPedidoRecibo(id);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erro ao baixar o recibo.";
+      setError(message);
+    }
+  }
+
   function cancelDeletePedido() {
     setPedidoToDelete(null);
   }
@@ -322,6 +333,7 @@ export default function Pedidos() {
           pedido={selectedPedido}
           onEdit={() => handleEditPedido(selectedPedido.id)}
           onDelete={() => openDeleteConfirmation(selectedPedido.id)}
+          onDownload={() => handleDownloadPedidoRecibo(selectedPedido.id)}
           onClose={() => setSelectedPedido(null)}
         />
       )}
