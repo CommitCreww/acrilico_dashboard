@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY
 CORS(
     app,
-    resources={r"/*": {"origins": CORS_ORIGINS}},
+    resources={r"/*": {"origins": "https://acrilico-dashboard.vercel.app"}},
     supports_credentials=False,
 )
 
