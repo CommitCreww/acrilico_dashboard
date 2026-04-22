@@ -50,6 +50,14 @@ Suba o banco com Docker:
 docker compose up -d
 ```
 
+Crie as tabelas e o primeiro usuario admin:
+
+```powershell
+cd backend
+python -m database.init_db
+cd ..
+```
+
 Para abrir o Adminer localmente:
 
 ```powershell

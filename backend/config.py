@@ -42,12 +42,24 @@ def _get_required_in_production(name: str, development_default: str) -> str:
     return development_default
 
 
+def _normalize_database_url(value: str) -> str:
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+psycopg2://", 1)
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+    return value
+
+
 APP_ENV = os.getenv("APP_ENV", os.getenv("FLASK_ENV", "development")).strip().lower()
 IS_PRODUCTION = APP_ENV == "production"
 
-DATABASE_URL = _get_required_in_production(
-    "DATABASE_URL",
-    "postgresql+psycopg2://admin:admin@localhost:5432/acrilico",
+DATABASE_URL = _normalize_database_url(
+    _get_required_in_production(
+        "DATABASE_URL",
+        "postgresql+psycopg2://admin:admin@localhost:5432/acrilico",
+    )
 )
 
 JWT_SECRET_KEY = _get_required_in_production(
