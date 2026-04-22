@@ -24,6 +24,8 @@ export type PedidoMaterial = {
   tipo: string;
   cor: string;
   espessura: string;
+  altura: number;
+  largura: number;
   quantidade: number;
   preco_m2: number;
 };

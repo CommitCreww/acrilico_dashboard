@@ -69,6 +69,20 @@ GROUP BY m.tipo, m.cor
 ORDER BY quantidade DESC;
 """
 
+MATERIAIS_MAIS_USADOS_MENSAL = """
+SELECT
+    p.colaborador_id,
+    p.data_entrada,
+    CONCAT(m.tipo, ' ', m.cor) AS material,
+    SUM(pm.quantidade) AS quantidade
+FROM pedido_materiais pm
+JOIN materiais m ON m.id = pm.material_id
+JOIN pedidos p ON p.id = pm.pedido_id
+WHERE p.data_entrada IS NOT NULL
+GROUP BY p.colaborador_id, p.data_entrada, m.tipo, m.cor
+ORDER BY p.data_entrada ASC, quantidade DESC;
+"""
+
 PEDIDOS_RECENTES = """
 SELECT
     p.id,

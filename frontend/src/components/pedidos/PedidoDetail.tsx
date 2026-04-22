@@ -157,6 +157,7 @@ export default function PedidoDetail({ pedido, onEdit, onDelete, onDownload, onC
                       <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">Material</p>
                       <p className="mt-1 text-sm text-zinc-200">{item.tipo}</p>
                       <p className="text-sm text-zinc-500">{item.cor} • {item.espessura}</p>
+                      <p className="text-sm text-zinc-500">{item.largura} x {item.altura} m</p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">Quantidade</p>

@@ -28,6 +28,8 @@ CREATE TABLE materiais(
 	tipo VARCHAR(50),
 	cor VARCHAR(50),
 	espessura VARCHAR(20),
+	altura REAL,
+	largura REAL,
 	preco_m2 NUMERIC(10,2)
 );
 

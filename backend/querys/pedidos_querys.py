@@ -76,6 +76,8 @@ SELECT
     m.tipo,
     m.cor,
     m.espessura,
+    m.altura,
+    m.largura,
     pm.quantidade,
     m.preco_m2
 FROM pedido_materiais pm

@@ -3,6 +3,7 @@ import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Pedidos from "./pages/Pedidos"
 import Clientes from "./pages/Clientes"
+import Materiais from "./pages/Materiais"
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("token")
@@ -40,6 +41,14 @@ function App() {
           element={
             <PrivateRoute>
               <Clientes />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/materiais"
+          element={
+            <PrivateRoute>
+              <Materiais />
             </PrivateRoute>
           }
         />

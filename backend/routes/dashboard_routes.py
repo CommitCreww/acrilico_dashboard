@@ -10,6 +10,7 @@ from querys.dashboard_querys import (
     FATURAMENTO_MENSAL,
     FATURAMENTO_POR_CLIENTE,
     MATERIAIS_MAIS_USADOS,
+    MATERIAIS_MAIS_USADOS_MENSAL,
     PEDIDOS_ENTREGA_HOJE,
 )
 from utils.auth_middleware import token_required
@@ -315,6 +316,72 @@ def materiais_mais_usados():
         resposta.append({
             "material": item["material"],
             "quantidade": int(item["quantidade"])
+        })
+
+    return jsonify(resposta)
+
+
+@dashboard_bp.route("/dashboard/materiais-mais-usados-mensal", methods=["GET"])
+@token_required
+def materiais_mais_usados_mensal():
+    db = SessionLocal()
+    usuario, resultados = get_pedidos_visiveis(db, MATERIAIS_MAIS_USADOS_MENSAL)
+
+    if not usuario:
+        db.close()
+        return jsonify({"erro": "UsuÃ¡rio nÃ£o encontrado"}), 404
+
+    db.close()
+
+    meses = [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Abr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Set",
+        "Out",
+        "Nov",
+        "Dez",
+    ]
+    uso_por_mes = {}
+
+    for item in resultados:
+        data_entrada = item["data_entrada"]
+        if not data_entrada:
+            continue
+
+        mes_key = (data_entrada.year, data_entrada.month)
+        material = item["material"]
+        quantidade = int(item["quantidade"] or 0)
+
+        if mes_key not in uso_por_mes:
+            uso_por_mes[mes_key] = {
+                "mes": f"{meses[data_entrada.month - 1]}/{str(data_entrada.year)[-2:]}",
+                "materiais": {},
+            }
+
+        uso_por_mes[mes_key]["materiais"][material] = (
+            uso_por_mes[mes_key]["materiais"].get(material, 0) + quantidade
+        )
+
+    resposta = []
+
+    for mes_key in sorted(uso_por_mes.keys()):
+        item = uso_por_mes[mes_key]
+        resposta.append({
+            "mes": item["mes"],
+            "materiais": [
+                {"material": material, "quantidade": quantidade}
+                for material, quantidade in sorted(
+                    item["materiais"].items(),
+                    key=lambda registro: registro[1],
+                    reverse=True,
+                )
+            ],
         })
 
     return jsonify(resposta)

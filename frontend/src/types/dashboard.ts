@@ -43,6 +43,11 @@ export type MaterialMaisUsado = {
   quantidade: number;
 };
 
+export type MaterialMaisUsadoMensal = {
+  mes: string;
+  materiais: MaterialMaisUsado[];
+};
+
 export type PedidoRecente = {
   id: number;
   cliente: string;

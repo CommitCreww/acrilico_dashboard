@@ -14,11 +14,11 @@ INSERT INTO clientes (nome, email, telefone, cpf_cnpj, endereco) VALUES
 ('Shopping Luz', 'shopping@email.com', '1155556666', '34.567.890/0001-22', 'Av Paulista 1000');
 
 
-INSERT INTO materiais (tipo, cor, espessura, preco_m2) VALUES
-('Acrilico', 'Transparente', '3mm', 380.00),
-('Acrilico', 'Preto', '5mm', 580.00),
-('Acrilico', 'Branco', '3mm', 420.00),
-('Policarbonato', 'Transparente', '4mm', 180.00);
+INSERT INTO materiais (tipo, cor, espessura, altura, largura, preco_m2) VALUES
+('Acrilico', 'Transparente', '3mm', 2.00, 1.00, 380.00),
+('Acrilico', 'Preto', '5mm', 2.00, 1.00, 580.00),
+('Acrilico', 'Branco', '3mm', 2.00, 1.00, 420.00),
+('Policarbonato', 'Transparente', '4mm', 3.00, 2.00, 180.00);
 
 INSERT INTO pedidos (colaborador_id, cliente_id, descricao, valor, data_entrada, data_entrega, status_pedido) VALUES
 (2, 1, 'Chapas para prateleira', 600.00, '2026-03-10', '2026-03-15', 'EM_PRODUCAO'),

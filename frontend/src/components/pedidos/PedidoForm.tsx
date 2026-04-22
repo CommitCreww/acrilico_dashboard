@@ -86,7 +86,7 @@ export default function PedidoForm({
   const materialOptions = useMemo(
     () => materials.map((material) => ({
       value: material.id,
-      label: `${material.tipo} • ${material.cor} • ${material.espessura}`,
+      label: `${material.tipo} • ${material.cor} • ${material.espessura} • ${material.largura} x ${material.altura}m`,
     })),
     [materials]
   );
@@ -366,7 +366,10 @@ export default function PedidoForm({
                   <div className="space-y-2 text-sm text-zinc-400">
                     <p className="font-medium text-white">Preview</p>
                     <p className="text-sm text-zinc-400">
-                      {materials.find((material) => material.id === Number(item.material_id))?.tipo || "-"}
+                      {(() => {
+                        const material = materials.find((current) => current.id === Number(item.material_id));
+                        return material ? `${material.tipo} - ${material.largura} x ${material.altura}m` : "-";
+                      })()}
                     </p>
                   </div>
 

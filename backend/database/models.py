@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, Numeric, Time
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, Numeric, Time, Float
 from sqlalchemy.orm import relationship
 from database.connection import Base
 
@@ -50,6 +50,8 @@ class Material(Base):
     tipo = Column(String(50))
     cor = Column(String(50))
     espessura = Column(String(20))
+    altura = Column(Float)
+    largura = Column(Float)
     preco_m2 = Column(Numeric(10, 2))
 
     pedido_materiais = relationship("PedidoMaterial", back_populates="material")

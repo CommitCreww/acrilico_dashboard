@@ -6,6 +6,7 @@ import type {
   PedidoEntregaHoje,
   FaturamentoMensalItem,
   MaterialMaisUsado,
+  MaterialMaisUsadoMensal,
   PedidoRecente,
   FaturamentoPorClienteItem,
   PedidosClientesRecorrenciaItem,
@@ -44,6 +45,13 @@ export async function getFaturamentoMensal() {
 
 export async function getMateriaisMaisUsados() {
   return apiFetch<MaterialMaisUsado[]>("/dashboard/materiais-mais-usados", {
+    method: "GET",
+    auth: true,
+  });
+}
+
+export async function getMateriaisMaisUsadosMensal() {
+  return apiFetch<MaterialMaisUsadoMensal[]>("/dashboard/materiais-mais-usados-mensal", {
     method: "GET",
     auth: true,
   });

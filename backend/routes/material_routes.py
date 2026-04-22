@@ -14,6 +14,18 @@ from querys.material_querys import (
 materiais_bp = Blueprint("materiais", __name__)
 
 
+def serialize_material(item):
+    return {
+        "id": item["id"],
+        "tipo": item["tipo"],
+        "cor": item["cor"],
+        "espessura": item["espessura"],
+        "altura": float(item["altura"]) if item["altura"] is not None else 0,
+        "largura": float(item["largura"]) if item["largura"] is not None else 0,
+        "preco_m2": float(item["preco_m2"]) if item["preco_m2"] is not None else 0
+    }
+
+
 @materiais_bp.route("/materiais", methods=["GET"])
 @token_required
 def listar_materiais():
@@ -23,16 +35,7 @@ def listar_materiais():
 
     db.close()
 
-    resposta = []
-
-    for item in resultados:
-        resposta.append({
-            "id": item["id"],
-            "tipo": item["tipo"],
-            "cor": item["cor"],
-            "espessura": item["espessura"],
-            "preco_m2": float(item["preco_m2"]) if item["preco_m2"] is not None else 0
-        })
+    resposta = [serialize_material(item) for item in resultados]
 
     return jsonify(resposta)
 
@@ -52,13 +55,7 @@ def buscar_material(id):
     if not material:
         return jsonify({"erro": "Material não encontrado"}), 404
 
-    return jsonify({
-        "id": material["id"],
-        "tipo": material["tipo"],
-        "cor": material["cor"],
-        "espessura": material["espessura"],
-        "preco_m2": float(material["preco_m2"]) if material["preco_m2"] is not None else 0
-    })
+    return jsonify(serialize_material(material))
 
 
 @materiais_bp.route("/materiais", methods=["POST"])
@@ -75,6 +72,8 @@ def criar_material():
                 "tipo": dados["tipo"],
                 "cor": dados["cor"],
                 "espessura": dados["espessura"],
+                "altura": dados.get("altura", 0),
+                "largura": dados.get("largura", 0),
                 "preco_m2": dados["preco_m2"]
             }
         ).mappings().first()
@@ -117,6 +116,8 @@ def atualizar_material(id):
                 "tipo": dados["tipo"],
                 "cor": dados["cor"],
                 "espessura": dados["espessura"],
+                "altura": dados.get("altura", 0),
+                "largura": dados.get("largura", 0),
                 "preco_m2": dados["preco_m2"]
             }
         )

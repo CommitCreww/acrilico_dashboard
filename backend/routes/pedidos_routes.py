@@ -150,10 +150,12 @@ def gerar_pdf_recibo(pedido, materiais, pagamentos):
             y = page_height - margin
             pdf.setFont("Helvetica", 10)
 
-        descricao = f"{item['tipo']} {item['cor']} {item['espessura']}"
+        medidas = f"{float(item.get('largura') or 0):.2f} x {float(item.get('altura') or 0):.2f}m"
+        descricao = f"{item['tipo']} {item['cor']} {item['espessura']} - {medidas}"
         quantidade = item.get('quantidade') or 0
+        area = float(item.get('largura') or 0) * float(item.get('altura') or 0)
         preco = float(item.get('preco_m2') or 0)
-        subtotal = float(quantidade) * preco
+        subtotal = float(quantidade) * (area if area > 0 else 1) * preco
         total_geral += subtotal
 
         pdf.drawString(margin, y, descricao[:52])
@@ -371,6 +373,8 @@ def buscar_pedido(id):
             "tipo": item["tipo"],
             "cor": item["cor"],
             "espessura": item["espessura"],
+            "altura": float(item["altura"]) if item["altura"] is not None else 0,
+            "largura": float(item["largura"]) if item["largura"] is not None else 0,
             "quantidade": item["quantidade"],
             "preco_m2": float(item["preco_m2"]) if item["preco_m2"] is not None else 0
         })
