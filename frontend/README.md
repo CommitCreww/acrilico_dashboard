@@ -7,18 +7,16 @@ Frontend em React + TypeScript + Vite.
 - Node.js 20+
 - npm
 
-## Configuração
+## Configuracao
 
 1. Entre na pasta `frontend`
 2. Crie o arquivo `.env` com base no exemplo:
 
 ```powershell
-Criar uma variavel com o endereço do backend
-
-ex: VITE_API_URL=http....
+Copy-Item .env.example .env
 ```
 
-3. Instale as dependências:
+3. Instale as dependencias:
 
 ```powershell
 npm install
@@ -30,7 +28,7 @@ npm install
 npm run dev
 ```
 
-## Variáveis de ambiente
+## Variaveis de ambiente
 
 Arquivo esperado:
 
@@ -38,9 +36,11 @@ Arquivo esperado:
 VITE_API_URL=http://localhost:5000
 ```
 
+Em deploy, `VITE_API_URL` deve apontar para a URL publica da API, sem barra final.
+
 ## Scripts
 
 - `npm run dev`: inicia o frontend
-- `npm run build`: gera build de produção
+- `npm run build`: gera build de producao
 - `npm run lint`: roda o lint
 - `npm run preview`: abre preview local do build

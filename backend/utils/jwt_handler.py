@@ -1,17 +1,18 @@
 import jwt
 import datetime
-
-SECRET_KEY = "secret_key_pika"
+from config import JWT_EXPIRATION_HOURS, JWT_SECRET_KEY
 
 
 def gerar_token(usuario):
 
+    now = datetime.datetime.now(datetime.timezone.utc)
     payload = {
         "user_id": usuario.id,
         "email": usuario.email,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+        "exp": now + datetime.timedelta(hours=JWT_EXPIRATION_HOURS),
+        "iat": now,
     }
 
-    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+    token = jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")
 
     return token

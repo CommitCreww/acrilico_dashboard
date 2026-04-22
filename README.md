@@ -9,7 +9,27 @@ Projeto com backend em Flask e frontend em React + Vite.
 - npm
 - Docker Desktop ou PostgreSQL local
 
-## 1. Backend
+## Ambiente
+
+Crie os arquivos locais a partir dos exemplos:
+
+```powershell
+Copy-Item .env.example .env
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env
+```
+
+Antes de deploy, troque obrigatoriamente:
+
+- `JWT_SECRET_KEY`
+- `SECRET_KEY`
+- `DATABASE_URL`
+- `CORS_ORIGINS`
+- `POSTGRES_PASSWORD`
+
+Em producao, use `APP_ENV=production`. Nesse modo, o backend falha ao iniciar se secrets ou banco nao estiverem configurados corretamente.
+
+## Backend
 
 Crie e ative um ambiente virtual:
 
@@ -18,22 +38,22 @@ python -m venv .venv
 .venv\Scripts\activate
 ```
 
-Instale as dependências:
+Instale as dependencias:
 
 ```powershell
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
-Suba o banco com Docker, se for usar o `docker-compose.yml`:
+Suba o banco com Docker:
 
 ```powershell
 docker compose up -d
 ```
 
-Se quiser usar variável de ambiente para o backend, crie `backend/.env` com base no exemplo:
+Para abrir o Adminer localmente:
 
 ```powershell
-Copy-Item backend/.env.example backend/.env
+docker compose --profile tools up -d adminer
 ```
 
 Inicie a API:
@@ -42,7 +62,7 @@ Inicie a API:
 python backend/app.py
 ```
 
-## 2. Frontend
+## Frontend
 
 Entre na pasta do frontend:
 
@@ -50,13 +70,7 @@ Entre na pasta do frontend:
 cd frontend
 ```
 
-Crie o `.env`:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Instale as dependências:
+Instale as dependencias:
 
 ```powershell
 npm install
@@ -68,13 +82,13 @@ Rode o frontend:
 npm run dev
 ```
 
-## Endereços padrão
+## Enderecos padrao
 
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:5000`
 
-## Observações
+## Observacoes
 
-- O frontend não usa `requirements.txt`; ele precisa de `node` e `npm`.
-- O arquivo `frontend/package-lock.json` já está versionado, então `npm install` instala as versões esperadas.
-- O backend continua funcionando mesmo sem `backend/.env`, porque o valor padrão atual da conexão permanece o mesmo do projeto.
+- O frontend precisa de `VITE_API_URL` apontando para a API.
+- O frontend nao usa `requirements.txt`; ele precisa de `node` e `npm`.
+- O arquivo `frontend/package-lock.json` ja esta versionado, entao `npm install` instala as versoes esperadas.

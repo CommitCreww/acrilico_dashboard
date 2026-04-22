@@ -1,4 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
+
+if (!API_BASE_URL) {
+  throw new Error("VITE_API_URL nao configurada.");
+}
 
 type ApiFetchOptions = RequestInit & {
   auth?: boolean;
@@ -17,11 +21,7 @@ export async function apiFetch<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const finalUrl = `${API_BASE_URL}${endpoint}`;
-
-  console.log("API_BASE_URL:", API_BASE_URL);
-  console.log("ENDPOINT:", endpoint);
-  console.log("URL FINAL:", finalUrl);
+  const finalUrl = buildApiUrl(endpoint);
 
   const response = await fetch(finalUrl, {
     ...options,
@@ -41,5 +41,13 @@ export async function apiFetch<T>(
     throw new Error(errorMessage);
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json();
+}
+
+export function buildApiUrl(endpoint: string) {
+  return `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 }

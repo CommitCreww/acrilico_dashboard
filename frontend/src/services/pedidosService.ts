@@ -1,4 +1,4 @@
-import { apiFetch } from "./api";
+import { apiFetch, buildApiUrl } from "./api";
 import type { PaginatedPedidos, PedidoDetail, PedidoFormValues } from "../types/pedidos";
 
 export async function getPedidos(
@@ -34,7 +34,7 @@ export async function getPedido(id: number) {
 
 export async function downloadPedidoRecibo(id: number) {
   const token = localStorage.getItem("token");
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/pedidos/${id}/recibo`, {
+  const response = await fetch(buildApiUrl(`/pedidos/${id}/recibo`), {
     method: "GET",
     headers: token
       ? {
