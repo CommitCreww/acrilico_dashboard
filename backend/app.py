@@ -14,6 +14,8 @@ app.config["SECRET_KEY"] = SECRET_KEY
 CORS(
     app,
     resources={r"/*": {"origins": CORS_ORIGINS}},
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
     supports_credentials=False,
 )
 
@@ -27,6 +29,11 @@ app.register_blueprint(colaboradores_bp)
 @app.route("/")
 def home():
     return "API Dashboard Acrilico"
+
+
+@app.route("/health")
+def health():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     app.run(host=HOST, port=PORT, debug=DEBUG)

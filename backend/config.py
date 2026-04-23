@@ -103,7 +103,7 @@ except ValueError as exc:
 
 SECRET_KEY = _get_required_in_production("SECRET_KEY", JWT_SECRET_KEY)
 
-_cors_default = "http://localhost:5173,http://127.0.0.1:5173"
+_cors_default = "http://localhost:5173,http://127.0.0.1:5173,https://acrilico-dashboard.vercel.app"
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.getenv("CORS_ORIGINS", _cors_default).split(",")
