@@ -8,6 +8,7 @@ const baseNavItems = [
   { label: "Pedidos", path: "/pedidos" },
   { label: "Clientes", path: "/clientes" },
   { label: "Materiais", path: "/materiais" },
+  { label: "Colaboradores", path: "/colaboradores" },
 ];
 
 type AppTopbarProps = {
@@ -17,12 +18,7 @@ type AppTopbarProps = {
 export default function AppTopbar({ userName = "Usuario" }: AppTopbarProps) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
-  const isAdmin = Number(user?.nivel_acesso ?? 0) >= 10 || user?.role === "ADMIN";
-  const navItems = isAdmin
-    ? [...baseNavItems, { label: "Colaboradores", path: "/colaboradores" }]
-    : baseNavItems;
+  const navItems = baseNavItems;
 
   return (
     <>
