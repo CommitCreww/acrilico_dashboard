@@ -132,3 +132,34 @@ def criar_colaborador():
         return jsonify({"erro": str(exc)}), 500
     finally:
         db.close()
+
+
+@colaboradores_bp.route("/colaboradores/<int:id>", methods=["DELETE"])
+@token_required
+def deletar_colaborador(id):
+    db = SessionLocal()
+
+    try:
+        _, error = require_admin(db)
+        if error:
+            return error
+
+        if id == g.user_id:
+            return jsonify({"erro": "Voce nao pode excluir o proprio usuario logado"}), 400
+
+        colaborador = db.query(Colaborador).filter(Colaborador.id == id).first()
+        if not colaborador:
+            return jsonify({"erro": "Colaborador nao encontrado"}), 404
+
+        db.delete(colaborador)
+        db.commit()
+
+        return jsonify({"message": "Colaborador excluido com sucesso"}), 200
+    except IntegrityError:
+        db.rollback()
+        return jsonify({"erro": "Nao foi possivel excluir: colaborador possui registros vinculados"}), 409
+    except Exception as exc:
+        db.rollback()
+        return jsonify({"erro": str(exc)}), 500
+    finally:
+        db.close()

@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import AppTopbar from "../components/layout/AppTopbar";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { createColaborador, getColaboradorRoles, getColaboradores } from "../services/colaboradoresService";
+import { createColaborador, deleteColaborador, getColaboradorRoles, getColaboradores } from "../services/colaboradoresService";
 import type { Colaborador, ColaboradorFormValues, Role } from "../types/colaboradores";
 
 const emptyForm: ColaboradorFormValues = {
@@ -18,12 +18,14 @@ export default function Colaboradores() {
   const [formValues, setFormValues] = useState<ColaboradorFormValues>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
   const userName = user?.nome || user?.name || user?.email?.split("@")[0] || "Usuario";
+  const currentUserId = Number(user?.id ?? 0);
 
   async function loadData() {
     try {
@@ -83,6 +85,30 @@ export default function Colaboradores() {
       setError(message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleDelete(colaborador: Colaborador) {
+    if (colaborador.id === currentUserId) {
+      setError("Voce nao pode excluir o proprio usuario logado.");
+      return;
+    }
+
+    const confirmed = window.confirm(`Excluir o colaborador ${colaborador.nome}?`);
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(colaborador.id);
+      setError(null);
+      setSuccess(null);
+      await deleteColaborador(colaborador.id);
+      setSuccess("Colaborador excluido com sucesso.");
+      await loadData();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erro ao excluir colaborador.";
+      setError(message);
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -152,7 +178,17 @@ export default function Colaboradores() {
                           <p className="mt-1 text-sm text-zinc-400">{colaborador.email}</p>
                           <p className="text-sm text-zinc-500">{colaborador.telefone}</p>
                         </div>
-                        <span className="w-fit rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-200">{colaborador.role ?? "Sem role"}</span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="w-fit rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-200">{colaborador.role ?? "Sem role"}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(colaborador)}
+                            disabled={deletingId === colaborador.id || colaborador.id === currentUserId}
+                            className="w-fit rounded-full border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {deletingId === colaborador.id ? "Excluindo..." : "Excluir"}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

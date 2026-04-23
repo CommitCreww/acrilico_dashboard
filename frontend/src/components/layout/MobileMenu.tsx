@@ -11,13 +11,15 @@ type MobileMenuProps = {
   onClose: () => void;
   navItems: NavItem[];
   userName?: string;
+  onLogout: () => void;
 };
 
 export default function MobileMenu({
   open,
   onClose,
   navItems,
-  userName = "Usuário",
+  userName = "Usuario",
+  onLogout,
 }: MobileMenuProps) {
   const location = useLocation();
 
@@ -38,7 +40,7 @@ export default function MobileMenu({
         <div className="flex items-center justify-between">
           <img
             src={logo}
-            alt="Ludarte Acrílicos"
+            alt="Ludarte Acrilicos"
             className="h-10 w-auto object-contain"
             draggable={false}
           />
@@ -49,20 +51,20 @@ export default function MobileMenu({
             className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white"
             aria-label="Fechar menu"
           >
-            ✕
+            X
           </button>
         </div>
 
         <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
           <p className="text-xs uppercase tracking-[0.18em] text-zinc-500">
-            Usuário
+            Usuario
           </p>
           <div className="mt-4 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-500/15 text-sm font-semibold text-violet-200">
               {userName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <p className="text-sm text-zinc-400">Sessão ativa</p>
+              <p className="text-sm text-zinc-400">Sessao ativa</p>
               <p className="font-medium text-white">{userName}</p>
             </div>
           </div>
@@ -88,6 +90,17 @@ export default function MobileMenu({
             );
           })}
         </nav>
+
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            onLogout();
+          }}
+          className="mt-6 w-full rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-4 text-sm font-semibold text-red-200 transition hover:bg-red-500/20"
+        >
+          Sair
+        </button>
       </aside>
     </>
   );

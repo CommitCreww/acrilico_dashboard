@@ -22,3 +22,10 @@ export async function createColaborador(payload: ColaboradorFormValues) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function deleteColaborador(id: number) {
+  return apiFetch<{ message: string }>(`/colaboradores/${id}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}

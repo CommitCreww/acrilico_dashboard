@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./MobileMenu";
 import logo from "../../assets/logo.png";
 
@@ -17,8 +17,15 @@ type AppTopbarProps = {
 
 export default function AppTopbar({ userName = "Usuario" }: AppTopbarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const navItems = baseNavItems;
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/", { replace: true });
+  }
 
   return (
     <>
@@ -70,6 +77,14 @@ export default function AppTopbar({ userName = "Usuario" }: AppTopbarProps) {
 
               <button
                 type="button"
+                onClick={handleLogout}
+                className="hidden rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/20 lg:inline-flex"
+              >
+                Sair
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setMenuOpen(true)}
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08] lg:hidden"
                 aria-label="Abrir menu"
@@ -90,6 +105,7 @@ export default function AppTopbar({ userName = "Usuario" }: AppTopbarProps) {
         onClose={() => setMenuOpen(false)}
         navItems={navItems}
         userName={userName}
+        onLogout={handleLogout}
       />
     </>
   );
