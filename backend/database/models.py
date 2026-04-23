@@ -36,7 +36,8 @@ class Cliente(Base):
     nome = Column(String(100), nullable=False)
     email = Column(String(100))
     telefone = Column(String(20))
-    cpf_cnpj = Column(String(30), nullable=False)
+    cpf_cnpj = Column(Text, nullable=False)
+    hash_cpf = Column(String(64), index=True)
     endereco = Column(String(100))
     observacoes = Column(Text)
 

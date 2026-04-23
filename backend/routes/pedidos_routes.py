@@ -8,6 +8,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
 from utils.pedidos_status import compute_status_pedido, normalize_status_pedido
+from utils.crypto import decrypt_cpf
 from utils.permissions import (
     can_delete_pedido,
     can_edit_pedido,
@@ -123,7 +124,7 @@ def gerar_pdf_recibo(pedido, materiais, pagamentos):
     pdf.drawString(page_width / 2 + 10, y, pedido.get('cliente_telefone') or '-')
     y -= 14
     pdf.drawString(margin, y, f"Entrega: {format_field(pedido.get('data_entrega'))}")
-    pdf.drawString(page_width / 2 + 10, y, f"CPF/CNPJ: {pedido.get('cliente_cpf_cnpj') or '-'}")
+    pdf.drawString(page_width / 2 + 10, y, f"CPF/CNPJ: {decrypt_cpf(pedido.get('cliente_cpf_cnpj')) or '-'}")
     y -= 14
     pdf.drawString(margin, y, f"Descrição: {pedido.get('descricao') or '-'}")
     pdf.drawRightString(page_width - margin, y, f"Total Pedido: R$ {float(pedido['valor'] or 0):.2f}")

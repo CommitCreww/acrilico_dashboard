@@ -18,7 +18,8 @@ CREATE TABLE clientes(
 	nome VARCHAR(100) NOT NULL,
 	email VARCHAR(100),
 	telefone VARCHAR(20),
-	cpf_cnpj VARCHAR(30) NOT NULL,
+	cpf_cnpj TEXT NOT NULL,
+	hash_cpf VARCHAR(64),
 	endereco VARCHAR(100),
 	observacoes TEXT
 );

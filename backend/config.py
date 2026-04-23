@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv
+from cryptography.fernet import Fernet
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -54,6 +55,9 @@ def _normalize_database_url(value: str) -> str:
 
 APP_ENV = os.getenv("APP_ENV", os.getenv("FLASK_ENV", "development")).strip().lower()
 IS_PRODUCTION = APP_ENV == "production"
+DEV_JWT_SECRET_KEY = "dev-only-change-me-before-deploy"
+DEV_FERNET_KEY = "bcCZuGn2VKfmfWDQxLj849yfZczB7AA0aWHtEip8buA="
+DEV_CPF_HASH_KEY = "dev-only-cpf-hash-key-change-me"
 
 DATABASE_URL = _normalize_database_url(
     _get_required_in_production(
@@ -64,12 +68,38 @@ DATABASE_URL = _normalize_database_url(
 
 JWT_SECRET_KEY = _get_required_in_production(
     "JWT_SECRET_KEY",
-    "dev-only-change-me-before-deploy",
+    DEV_JWT_SECRET_KEY,
 )
 JWT_EXPIRATION_HOURS = _get_int("JWT_EXPIRATION_HOURS", 8)
 
+FERNET_KEY = _get_required_in_production(
+    "FERNET_KEY",
+    DEV_FERNET_KEY,
+)
+CPF_HASH_KEY = _get_required_in_production(
+    "CPF_HASH_KEY",
+    DEV_CPF_HASH_KEY,
+)
+
 if IS_PRODUCTION and len(JWT_SECRET_KEY) < 32:
     raise ConfigError("JWT_SECRET_KEY must have at least 32 characters in production.")
+
+if IS_PRODUCTION and len(CPF_HASH_KEY) < 32:
+    raise ConfigError("CPF_HASH_KEY must have at least 32 characters in production.")
+
+if IS_PRODUCTION and JWT_SECRET_KEY == DEV_JWT_SECRET_KEY:
+    raise ConfigError("JWT_SECRET_KEY cannot use the development default in production.")
+
+if IS_PRODUCTION and FERNET_KEY == DEV_FERNET_KEY:
+    raise ConfigError("FERNET_KEY cannot use the development default in production.")
+
+if IS_PRODUCTION and CPF_HASH_KEY == DEV_CPF_HASH_KEY:
+    raise ConfigError("CPF_HASH_KEY cannot use the development default in production.")
+
+try:
+    Fernet(FERNET_KEY.encode("utf-8"))
+except ValueError as exc:
+    raise ConfigError("FERNET_KEY must be a valid Fernet key.") from exc
 
 SECRET_KEY = _get_required_in_production("SECRET_KEY", JWT_SECRET_KEY)
 

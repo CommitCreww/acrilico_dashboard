@@ -23,11 +23,19 @@ Antes de deploy, troque obrigatoriamente:
 
 - `JWT_SECRET_KEY`
 - `SECRET_KEY`
+- `FERNET_KEY`
+- `CPF_HASH_KEY`
 - `DATABASE_URL`
 - `CORS_ORIGINS`
 - `POSTGRES_PASSWORD`
 
 Em producao, use `APP_ENV=production`. Nesse modo, o backend falha ao iniciar se secrets ou banco nao estiverem configurados corretamente.
+
+Gere chaves novas assim:
+
+```powershell
+python -c "import secrets; from cryptography.fernet import Fernet; print('FERNET_KEY=' + Fernet.generate_key().decode()); print('CPF_HASH_KEY=' + secrets.token_urlsafe(64)); print('JWT_SECRET_KEY=' + secrets.token_urlsafe(64)); print('SECRET_KEY=' + secrets.token_urlsafe(64))"
+```
 
 ## Backend
 
@@ -56,6 +64,12 @@ Crie as tabelas e o primeiro usuario admin:
 cd backend
 python -m database.init_db
 cd ..
+```
+
+No Render, use o init antes de iniciar o servidor:
+
+```bash
+cd backend && python -m database.init_db && gunicorn app:app
 ```
 
 Para abrir o Adminer localmente:

@@ -25,8 +25,8 @@ WHERE id = :cliente_id;
 """
 
 CRIAR_CLIENTE = """
-INSERT INTO clientes (nome, email, telefone, cpf_cnpj, endereco, observacoes)
-VALUES (:nome, :email, :telefone, :cpf_cnpj, :endereco, :observacoes)
+INSERT INTO clientes (nome, email, telefone, cpf_cnpj, hash_cpf, endereco, observacoes)
+VALUES (:nome, :email, :telefone, :cpf_cnpj, :hash_cpf, :endereco, :observacoes)
 RETURNING id;
 """
 
@@ -37,6 +37,7 @@ SET
     email = :email,
     telefone = :telefone,
     cpf_cnpj = :cpf_cnpj,
+    hash_cpf = :hash_cpf,
     endereco = :endereco,
     observacoes = :observacoes
 WHERE id = :cliente_id;

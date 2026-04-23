@@ -4,6 +4,7 @@ from utils.auth_middleware import token_required
 from sqlalchemy import text
 from utils.pedidos_status import compute_status_pedido
 from utils.permissions import can_view_pedido, get_usuario_contexto
+from utils.crypto import encrypt_cpf, hash_cpf, decrypt_cpf
 
 from querys.clientes_querys import (
     LISTAR_CLIENTES,
@@ -16,8 +17,10 @@ from querys.clientes_querys import (
 clientes_bp = Blueprint("clientes", __name__)
 
 
-def ensure_clientes_observacoes_column(db):
+def ensure_clientes_columns(db):
     db.execute(text("ALTER TABLE clientes ADD COLUMN IF NOT EXISTS observacoes TEXT;"))
+    db.execute(text("ALTER TABLE clientes ALTER COLUMN cpf_cnpj TYPE TEXT;"))
+    db.execute(text("ALTER TABLE clientes ADD COLUMN IF NOT EXISTS hash_cpf VARCHAR(64);"))
     db.commit()
 
 
@@ -27,7 +30,7 @@ def serialize_cliente(item, total_pedidos=0):
         "nome": item["nome"],
         "email": item["email"],
         "telefone": item["telefone"],
-        "cpf_cnpj": item["cpf_cnpj"],
+        "cpf_cnpj": decrypt_cpf(item["cpf_cnpj"]),
         "endereco": item["endereco"],
         "observacoes": item["observacoes"],
         "total_pedidos": total_pedidos,
@@ -82,7 +85,7 @@ def get_pedidos_visiveis_do_cliente(db, cliente_id):
 def listar_clientes():
     db = SessionLocal()
 
-    ensure_clientes_observacoes_column(db)
+    ensure_clientes_columns(db)
 
     usuario = get_usuario_contexto(db, g.user_id)
     if not usuario:
@@ -106,7 +109,7 @@ def listar_clientes():
 def buscar_cliente(id):
     db = SessionLocal()
 
-    ensure_clientes_observacoes_column(db)
+    ensure_clientes_columns(db)
 
     cliente = db.execute(
         text(BUSCAR_CLIENTE_POR_ID),
@@ -130,7 +133,7 @@ def buscar_cliente(id):
 def buscar_resumo_cliente(id):
     db = SessionLocal()
 
-    ensure_clientes_observacoes_column(db)
+    ensure_clientes_columns(db)
 
     cliente = db.execute(
         text(BUSCAR_CLIENTE_POR_ID),
@@ -167,7 +170,7 @@ def criar_cliente():
     db = SessionLocal()
 
     try:
-        ensure_clientes_observacoes_column(db)
+        ensure_clientes_columns(db)
         dados = request.json
 
         resultado = db.execute(
@@ -176,7 +179,8 @@ def criar_cliente():
                 "nome": dados["nome"],
                 "email": dados["email"],
                 "telefone": dados["telefone"],
-                "cpf_cnpj": dados["cpf_cnpj"],
+                "cpf_cnpj": encrypt_cpf(dados["cpf_cnpj"]),
+                "hash_cpf": hash_cpf(dados["cpf_cnpj"]),
                 "endereco": dados["endereco"],
                 "observacoes": dados.get("observacoes")
             }
@@ -202,7 +206,7 @@ def atualizar_cliente(id):
     db = SessionLocal()
 
     try:
-        ensure_clientes_observacoes_column(db)
+        ensure_clientes_columns(db)
         dados = request.json
 
         cliente = db.execute(
@@ -221,7 +225,8 @@ def atualizar_cliente(id):
                 "nome": dados["nome"],
                 "email": dados["email"],
                 "telefone": dados["telefone"],
-                "cpf_cnpj": dados["cpf_cnpj"],
+                "cpf_cnpj": encrypt_cpf(dados["cpf_cnpj"]),
+                "hash_cpf": hash_cpf(dados["cpf_cnpj"]),
                 "endereco": dados["endereco"],
                 "observacoes": dados.get("observacoes")
             }

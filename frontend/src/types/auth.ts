@@ -11,5 +11,7 @@ export type LoginResponse = {
     name?: string;
     email: string;
     role_id?: number;
+    role?: string;
+    nivel_acesso?: number;
   };
 };
