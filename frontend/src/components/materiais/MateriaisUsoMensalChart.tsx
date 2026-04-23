@@ -55,7 +55,6 @@ export default function MateriaisUsoMensalChart({ data }: MateriaisUsoMensalChar
     <section className="h-full rounded-[28px] border border-white/10 bg-zinc-900/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
       <div className="mb-6">
         <p className="text-sm font-medium text-zinc-300">Materiais mais usados por mes</p>
-        <p className="mt-1 text-sm text-zinc-500">Top materiais por quantidade vinculada aos pedidos.</p>
       </div>
 
       {chartData.length === 0 || materials.length === 0 ? (

@@ -125,7 +125,7 @@ export default function Colaboradores() {
               Colaboradores
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">
-              Crie acessos para a equipe. O backend permite essa acao apenas para administradores.
+              Crie acessos para a equipe.
             </p>
           </section>
 
