@@ -4,6 +4,8 @@ Sistema completo de gestão para uma loja de produtos em acrílico, com foco em 
 
 🔗 **Acesse o projeto:** [https://acrilico-dashboard.vercel.app/dashboard](https://acrilico-dashboard.vercel.app/dashboard)
 
+![Dashboard Preview](./git/images/previa.png)
+
 ---
 
 ## 📌 Sobre o projeto
