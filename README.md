@@ -2,7 +2,7 @@
 
 Sistema completo de gestão para uma loja de produtos em acrílico, com foco em controle de pedidos, produção e faturamento em tempo real.
 
-🔗 **Acesse o projeto:** [https://acrilico-dashboard.vercel.app/dashboard](https://acrilico-dashboard.vercel.app/dashboard)
+🔗 **Acesse o projeto:** [https://acrilico-dashboard.vercel.app/dashboard](https://acrilico-dashboard.vercel.app/)
 
 ![Dashboard Preview](./git/images/previa.png)
 
